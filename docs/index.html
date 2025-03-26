@@ -293,6 +293,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             max-width: 300px;
             word-break: break-word;
+            min-height: 40px;
         }
         
         .connected {
@@ -307,13 +308,33 @@
             color: #f39c12;
         }
         
-        .error {
-            color: #e74c3c;
-            background-color: #ffebee;
-        }
-        
         .bounce {
             animation: bounce 0.4s;
+        }
+        
+        /* Microbit Data Log */
+        #microbit-data-container {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        #microbit-data-log {
+            width: 100%;
+            height: 150px;
+            font-family: monospace;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            background-color: #f9f9f9;
         }
         
         @keyframes spin {
@@ -364,6 +385,12 @@
         </div>
     </div>
 
+    <!-- Microbit Data Log Container -->
+    <div id="microbit-data-container">
+        <h3 style="margin-bottom: 10px; color: #9b59b6;">Micro:bit Data Log</h3>
+        <textarea id="microbit-data-log" readonly></textarea>
+    </div>
+
     <script>
         // Machine Learning Variables
         let model, webcam;
@@ -371,12 +398,11 @@
         let predictionElements = [];
         
         // Bluetooth Variables
-        let microbitDevice = null;
-        let microbitServer = null;
-        let microbitUARTService = null;
-        let microbitRXCharacteristic = null;
-        let microbitTXCharacteristic = null;
-        let isConnecting = false;
+        let microbitDevice;
+        let microbitServer;
+        let microbitUARTService;
+        let microbitRXCharacteristic;
+        let microbitTXCharacteristic;
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -388,39 +414,46 @@
             bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
         }
         
-        function updateBluetoothData(message, isReceived = false, isError = false) {
+        function updateBluetoothData(message, isReceived = false) {
             const dataElement = document.getElementById('bluetooth-data');
-            const prefix = isReceived ? "Received: " : (isError ? "Error: " : "Sent: ");
+            const prefix = isReceived ? "Received: " : "Sent: ";
             dataElement.textContent = prefix + message;
             
-            if (isError) {
-                dataElement.style.backgroundColor = '#ffebee';
-                dataElement.style.color = '#e74c3c';
-            } else {
-                dataElement.style.backgroundColor = '#ffffcc';
-                dataElement.style.color = '#333';
-            }
-            
+            // Flash the data box to show activity
+            dataElement.style.backgroundColor = '#ffffcc';
             setTimeout(() => {
                 dataElement.style.backgroundColor = 'white';
-                dataElement.style.color = '#333';
-            }, 1000);
+            }, 300);
+            
+            // Update the data log
+            updateMicrobitDataLog(message, isReceived);
+        }
+        
+        function updateMicrobitDataLog(message, isReceived = false) {
+            const container = document.getElementById('microbit-data-container');
+            const log = document.getElementById('microbit-data-log');
+            
+            // Show container if connected and hidden
+            if (microbitDevice && microbitDevice.gatt.connected && container.style.display === 'none') {
+                container.style.display = 'block';
+            }
+            
+            const direction = isReceived ? "RECV: " : "SENT: ";
+            const timestamp = new Date().toLocaleTimeString();
+            log.value += `[${timestamp}] ${direction}${message}\n`;
+            log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
         }
         
         async function toggleBluetoothConnection() {
-            if (isConnecting) return;
-            
             if (microbitDevice && microbitDevice.gatt.connected) {
                 await disconnectMicrobit();
+                document.getElementById('microbit-data-container').style.display = 'none';
             } else {
                 await connectMicrobit();
             }
         }
         
         async function connectMicrobit() {
-            if (isConnecting) return;
-            isConnecting = true;
-            
             try {
                 const bluetoothBtn = document.getElementById('bluetooth-btn');
                 const statusElement = document.getElementById('bluetooth-status');
@@ -428,16 +461,7 @@
                 bluetoothBtn.disabled = true;
                 statusElement.textContent = "Connecting...";
                 statusElement.className = "connecting";
-                updateBluetoothData("Starting connection...");
-                
-                // Reset any existing connection
-                if (microbitDevice && microbitDevice.gatt) {
-                    try {
-                        await microbitDevice.gatt.disconnect();
-                    } catch (e) {
-                        console.log("Disconnecting previous device failed:", e);
-                    }
-                }
+                updateBluetoothData("Attempting to connect...");
                 
                 // Request Bluetooth device
                 microbitDevice = await navigator.bluetooth.requestDevice({
@@ -445,17 +469,12 @@
                     optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] // UART service
                 });
                 
-                updateBluetoothData("Device selected, connecting GATT...");
+                updateBluetoothData("Device selected, connecting...");
                 
-                // Connect to the GATT Server with timeout
-                const connectPromise = microbitDevice.gatt.connect();
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error("Connection timeout")), 10000)
-                );
+                // Connect to the GATT Server
+                microbitServer = await microbitDevice.gatt.connect();
                 
-                microbitServer = await Promise.race([connectPromise, timeoutPromise]);
-                
-                updateBluetoothData("GATT connected, getting services...");
+                updateBluetoothData("Connected, getting services...");
                 
                 // Get the UART service
                 microbitUARTService = await microbitServer.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
@@ -486,28 +505,12 @@
                 console.log("Micro:bit connected successfully!");
                 
             } catch (error) {
-                console.error("Bluetooth connection failed:", error);
-                updateBluetoothData("Connection failed: " + error.message, false, true);
+                console.error("Bluetooth error:", error);
+                updateBluetoothData("Connection failed: " + error.message);
                 document.getElementById('bluetooth-status').textContent = "Error";
-                document.getElementById('bluetooth-status').className = "error";
+                document.getElementById('bluetooth-status').className = "disconnected";
                 document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
                 document.getElementById('bluetooth-btn').disabled = false;
-                
-                // Clean up any partial connection
-                if (microbitDevice && microbitDevice.gatt && microbitDevice.gatt.connected) {
-                    try {
-                        await microbitDevice.gatt.disconnect();
-                    } catch (e) {
-                        console.log("Disconnect after failed connection failed:", e);
-                    }
-                }
-                microbitDevice = null;
-                microbitServer = null;
-                microbitUARTService = null;
-                microbitRXCharacteristic = null;
-                microbitTXCharacteristic = null;
-            } finally {
-                isConnecting = false;
             }
         }
         
@@ -519,77 +522,53 @@
             statusElement.className = "disconnected";
             bluetoothBtn.textContent = "Connect Micro:bit";
             updateBluetoothData("Disconnected from Micro:bit");
-            
-            // Clean up
             microbitDevice = null;
-            microbitServer = null;
-            microbitUARTService = null;
-            microbitRXCharacteristic = null;
-            microbitTXCharacteristic = null;
             
             console.log("Micro:bit disconnected");
         }
         
         async function disconnectMicrobit() {
-            if (!microbitDevice) return;
-            
-            try {
-                if (microbitDevice.gatt.connected) {
-                    await microbitDevice.gatt.disconnect();
-                }
-            } catch (error) {
-                console.error("Error disconnecting:", error);
-                updateBluetoothData("Disconnect error: " + error.message, false, true);
+            if (microbitDevice && microbitDevice.gatt.connected) {
+                await microbitDevice.gatt.disconnect();
             }
             onBluetoothDisconnected();
         }
         
         function handleMicrobitData(event) {
-            try {
-                const value = event.target.value;
-                const decoder = new TextDecoder();
-                const message = decoder.decode(value).trim();
-                
-                console.log("Received from Micro:bit:", message);
-                updateBluetoothData(message, true);
-                
-                // Process commands from Micro:bit
-                if (message === "CAPTURE") {
-                    if (webcam && model) {
-                        predict();
-                    }
+            const value = event.target.value;
+            const decoder = new TextDecoder();
+            const message = decoder.decode(value).trim();
+            
+            console.log("Received from Micro:bit:", message);
+            updateBluetoothData(message, true);
+            
+            // Process commands from Micro:bit
+            if (message === "CAPTURE") {
+                if (webcam && model) {
+                    predict();
                 }
-            } catch (error) {
-                console.error("Error handling Micro:bit data:", error);
-                updateBluetoothData("Data error: " + error.message, false, true);
             }
         }
         
         async function sendToMicrobit(message) {
-            if (!microbitDevice || !microbitDevice.gatt.connected || !microbitRXCharacteristic) {
-                updateBluetoothData("Not connected, cannot send", false, true);
-                return;
-            }
-            
-            try {
-                const encoder = new TextEncoder();
-                // Ensure message ends with newline for Micro:bit
-                const messageWithNewline = message.endsWith('\n') ? message : message + '\n';
-                await microbitRXCharacteristic.writeValue(encoder.encode(messageWithNewline));
-                console.log("Sent to Micro:bit:", messageWithNewline.trim());
-                updateBluetoothData(messageWithNewline.trim());
-            } catch (error) {
-                console.error("Failed to send to Micro:bit:", error);
-                updateBluetoothData("Send error: " + error.message, false, true);
-                
-                // If send fails, assume connection is broken
-                if (error.message.includes("disconnected")) {
-                    onBluetoothDisconnected();
+            if (microbitDevice && microbitDevice.gatt.connected && microbitRXCharacteristic) {
+                try {
+                    const encoder = new TextEncoder();
+                    // Ensure message ends with newline for Micro:bit
+                    const messageWithNewline = message.endsWith('\n') ? message : message + '\n';
+                    await microbitRXCharacteristic.writeValue(encoder.encode(messageWithNewline));
+                    console.log("Sent to Micro:bit:", messageWithNewline.trim());
+                    updateBluetoothData(messageWithNewline.trim());
+                } catch (error) {
+                    console.error("Failed to send to Micro:bit:", error);
+                    updateBluetoothData("Send error: " + error.message);
                 }
+            } else {
+                updateBluetoothData("Not connected, cannot send");
             }
         }
         
-        // Machine Learning Functions (keep all your existing ML functions)
+        // Machine Learning Functions
         async function init() {
             let baseURL = document.getElementById("model-url").value.trim();
             

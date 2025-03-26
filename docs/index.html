@@ -471,7 +471,7 @@ async function connectMicrobit() {
         microbitDevice = await navigator.bluetooth.requestDevice({
             filters: [{ namePrefix: "BBC micro:bit" }],
             optionalServices: [
-                'b112f5e6-2679-30da-a26e-0273b6043849' // HF2 service
+                '49153804-7302-6EA2-DA30-7926E6F512B1' // HF2 service
             ]
         });
         
@@ -483,12 +483,12 @@ async function connectMicrobit() {
         updateBluetoothData("Connected, getting services...");
         
         // Get the HF2 service
-        microbitHF2Service = await microbitServer.getPrimaryService('b112f5e6-2679-30da-a26e-0273b6043849');
+        microbitHF2Service = await microbitServer.getPrimaryService('49153804-7302-6EA2-DA30-7926E6F512B1');
         
         updateBluetoothData("Service found, getting characteristics...");
         
         // Get the characteristics
-        microbitTXCharacteristic = await microbitHF2Service.getCharacteristic('b112f5e6-2679-30da-a26e-0273b604384a');
+        microbitTXCharacteristic = await microbitHF2Service.getCharacteristic('4A153804-7302-6EA2-DA30-7926E6F512B1');
         
         // Listen for incoming data
         await microbitTXCharacteristic.startNotifications();

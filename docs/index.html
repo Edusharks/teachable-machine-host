@@ -45,7 +45,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 1200px; /* Increased from 900px */
+            max-width: 1200px;
             background-color: white;
             border-radius: 20px;
             padding: 30px;
@@ -63,8 +63,8 @@
         
         .video-container {
             position: relative;
-            width: 600px; /* Increased from 400px */
-            height: 500px; /* Increased from 400px */
+            width: 700px;
+            height: 500px;
             background-color: #e9ecef;
             border-radius: 20px;
             overflow: hidden;
@@ -122,9 +122,14 @@
         }
         
         .results-container {
-            width: 400px; /* Kept same but content is more compact */
+            width: 400px;
+            height: 500px;
             display: flex;
             flex-direction: column;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            border: 4px solid #ffd166;
         }
         
         .results-title {
@@ -137,30 +142,29 @@
         #label-container {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Reduced from 15px */
-            height: 500px; /* Match video container height */
-            overflow-y: auto;
-            padding-right: 10px;
+            gap: 8px;
+            height: calc(100% - 60px);
+            overflow: hidden;
         }
         
         .prediction {
             background-color: white;
-            padding: 12px; /* Reduced from 20px */
-            border-radius: 12px; /* Slightly smaller */
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #74b9ff; /* Thinner border */
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #74b9ff;
             transition: all 0.3s;
-            display: flex; /* New: side by side layout */
+            display: flex;
             align-items: center;
             justify-content: space-between;
+            min-height: 50px;
         }
         
         .prediction-name {
             font-weight: bold;
             color: #333;
-            font-size: 1.2rem; /* Reduced from 1.5rem */
-            margin-bottom: 0; /* Removed margin */
-            width: 40%; /* Fixed width for name */
+            font-size: 1.1rem;
+            width: 45%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -169,37 +173,37 @@
         .confidence-container {
             display: flex;
             align-items: center;
-            gap: 10px; /* Reduced from 15px */
-            width: 60%; /* Fixed width for confidence */
+            gap: 8px;
+            width: 55%;
         }
         
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
-            font-size: 1.2rem; /* Reduced from 1.8rem */
-            min-width: 50px; /* Reduced from 70px */
+            font-size: 1.1rem;
+            min-width: 45px;
             text-align: right;
         }
         
         .confidence-bar-container {
             flex: 1;
-            height: 20px; /* Reduced from 25px */
+            height: 16px;
             background-color: #e9ecef;
-            border-radius: 10px; /* Slightly smaller */
+            border-radius: 8px;
             overflow: hidden;
         }
         
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
-            border-radius: 10px; /* Slightly smaller */
+            border-radius: 8px;
             width: 0%;
             transition: width 1s ease-out;
         }
         
         .input-container {
             width: 100%;
-            max-width: 800px; /* Increased from 600px */
+            max-width: 800px;
             display: flex;
             gap: 10px;
             margin-top: 20px;
@@ -226,7 +230,6 @@
             font-size: 1.2rem;
             transition: all 0.3s;
             box-shadow: 0 3px 0 #3a86ff;
-            white-space: nowrap;
         }
         
         #start-btn:hover {
@@ -252,26 +255,7 @@
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        /* Scrollbar styling */
-        #label-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        #label-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        #label-container::-webkit-scrollbar-thumb {
-            background: #74b9ff;
-            border-radius: 10px;
-        }
-        
-        #label-container::-webkit-scrollbar-thumb:hover {
-            background: #3a86ff;
+            50% { transform: translateY(-5px); }
         }
     </style>
 </head>
@@ -288,7 +272,7 @@
                         <div class="loading-text">Loading model...</div>
                     </div>
                     <canvas id="webcam-canvas"></canvas>
-                    <p id="initial-message" style="color: #666; text-align: center;">Add your model URL and click Start</p>
+                    <p id="initial-message" style="color: #666; text-align: center; padding: 20px;">Add your Teachable Machine model URL and click Start to begin!</p>
                 </div>
             </div>
             
@@ -299,7 +283,7 @@
         </div>
         
         <div class="input-container">
-            <input type="text" id="model-url" placeholder="Paste your Teachable Machine URL here">
+            <input type="text" id="model-url" placeholder="Paste your Teachable Machine model URL here (e.g., https://teachablemachine.withgoogle.com/models/ABC123/)">
             <button id="start-btn" onclick="init()">Start</button>
         </div>
     </div>
@@ -312,12 +296,20 @@
         async function init() {
             let baseURL = document.getElementById("model-url").value.trim();
             
+            // Basic URL validation
+            if (!baseURL) {
+                alert("Please enter a Teachable Machine model URL.");
+                return;
+            }
+            
+            // Ensure URL ends with slash
             if (!baseURL.endsWith("/")) {
                 baseURL += "/";
             }
 
-            if (!baseURL.includes("teachablemachine.withgoogle.com/models/")) {
-                alert("Please enter a valid Teachable Machine model URL.");
+            // More specific validation for Teachable Machine URLs
+            if (!baseURL.startsWith("https://teachablemachine.withgoogle.com/models/")) {
+                alert("Please enter a valid Teachable Machine model URL.\nExample: https://teachablemachine.withgoogle.com/models/ABC123/");
                 return;
             }
 
@@ -330,38 +322,39 @@
                 document.getElementById("initial-message").style.display = "none";
                 document.getElementById("start-btn").disabled = true;
                 
+                // Clear previous model if exists
                 if (model) {
                     model = null;
                 }
                 
-                // Load model and metadata
+                // Load the model and metadata
                 model = await tmImage.load(modelURL, metadataURL);
                 const metadata = await fetch(metadataURL).then(res => res.json());
                 classNames = metadata.labels;
 
                 initializePredictionElements();
                 
-                // Initialize Webcam
+                // Setup webcam
                 const flip = true;
-                webcam = new tmImage.Webcam(600, 500, flip); // Updated dimensions
+                webcam = new tmImage.Webcam(700, 500, flip);
                 await webcam.setup();
                 await webcam.play();
 
-                // Get and setup canvas
+                // Get canvas and set dimensions
                 const canvas = document.getElementById("webcam-canvas");
-                canvas.width = 600;
+                canvas.width = 700;
                 canvas.height = 500;
                 canvas.style.display = "block";
                 
-                // Hide loading, show camera
+                // Hide loading and show camera
                 document.getElementById("loading-indicator").style.display = "none";
                 
                 // Start prediction loop
                 window.requestAnimationFrame(loop);
                 
             } catch (error) {
-                console.error("Error loading the model:", error);
-                alert("Failed to load the model. Check the URL and try again.");
+                console.error("Error loading model:", error);
+                alert("Failed to load the model. Please check:\n1. The URL is correct\n2. You have internet access\n3. The model is public");
                 document.getElementById("loading-indicator").style.display = "none";
                 document.getElementById("initial-message").style.display = "block";
             } finally {
@@ -374,7 +367,7 @@
             labelContainer.innerHTML = "";
             predictionElements = [];
             
-            // Create prediction elements in the original class order
+            // Create prediction elements for each class
             for (let i = 0; i < classNames.length; i++) {
                 const div = document.createElement("div");
                 div.className = "prediction";
@@ -402,17 +395,21 @@
                 webcam.update();
                 const canvas = document.getElementById("webcam-canvas");
                 const ctx = canvas.getContext("2d");
-                ctx.drawImage(webcam.canvas, 0, 0, 600, 500);
+                ctx.drawImage(webcam.canvas, 0, 0, 700, 500);
                 await predict();
                 window.requestAnimationFrame(loop);
             }
         }
 
         async function predict() {
-            if (!model) return;
+            if (!model || !webcam) return;
             
-            const prediction = await model.predict(webcam.canvas);
-            updatePredictions(prediction);
+            try {
+                const prediction = await model.predict(webcam.canvas);
+                updatePredictions(prediction);
+            } catch (error) {
+                console.error("Prediction error:", error);
+            }
         }
         
         function updatePredictions(prediction) {
@@ -422,7 +419,7 @@
                 predictionMap[p.className] = p.probability;
             });
             
-            // Update each prediction element in the original order
+            // Update each prediction element
             for (let i = 0; i < classNames.length; i++) {
                 if (predictionElements[i]) {
                     const className = classNames[i];

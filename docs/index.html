@@ -27,7 +27,7 @@
         h1 {
             color: #ff6b6b;
             text-align: center;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-bottom: 10px;
             text-shadow: 2px 2px 0px #fff;
         }
@@ -36,15 +36,15 @@
             color: #4d96ff;
             text-align: center;
             margin-bottom: 20px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
         
         .main-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 900px;
+            width: 95%;
+            max-width: 1200px;
             background-color: white;
             border-radius: 15px;
             padding: 20px;
@@ -53,7 +53,7 @@
         
         .input-container {
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
@@ -94,19 +94,20 @@
             display: flex;
             width: 100%;
             justify-content: center;
-            gap: 20px;
+            gap: 30px;
         }
         
         .video-container {
             position: relative;
-            width: 500px;
-            height: 400px;
+            width: 650px;
+            height: 500px;
             background-color: #e9ecef;
             border-radius: 15px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            border: 4px solid #74b9ff; /* Blue border restored */
         }
         
         #webcam-container {
@@ -157,33 +158,33 @@
         }
         
         .results-container {
-            width: 350px;
-            min-height: 400px;
+            width: 400px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             background-color: #f8f9fa;
             border-radius: 15px;
-            padding: 15px;
+            padding: 20px;
         }
         
         .results-title {
             color: #ff6b6b;
             font-size: 1.5rem;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
         }
         
         #label-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             flex-grow: 1;
         }
         
         .prediction {
             background-color: white;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 12px 15px;
+            border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: all 0.3s;
             display: flex;
@@ -194,7 +195,7 @@
         .prediction-name {
             font-weight: bold;
             color: #333;
-            font-size: 1rem;
+            font-size: 1.1rem;
             width: 45%;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -204,30 +205,30 @@
         .confidence-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             width: 55%;
         }
         
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
-            font-size: 1rem;
-            min-width: 40px;
+            font-size: 1.1rem;
+            min-width: 45px;
             text-align: right;
         }
         
         .confidence-bar-container {
             flex: 1;
-            height: 14px;
+            height: 16px;
             background-color: #e9ecef;
-            border-radius: 7px;
+            border-radius: 8px;
             overflow: hidden;
         }
         
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
-            border-radius: 7px;
+            border-radius: 8px;
             width: 0%;
             transition: width 0.5s ease-out;
         }
@@ -243,7 +244,7 @@
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-5px); }
         }
     </style>
 </head>
@@ -265,7 +266,7 @@
                         <div class="loading-text">Loading model...</div>
                     </div>
                     <canvas id="webcam-canvas"></canvas>
-                    <p id="initial-message" style="color: #666; text-align: center; padding: 15px;">Add your model URL above and click Start</p>
+                    <p id="initial-message" style="color: #666; text-align: center; padding: 20px;">Add your model URL above and click Start</p>
                 </div>
             </div>
             
@@ -317,13 +318,13 @@
                 initializePredictionElements();
                 
                 const flip = true;
-                webcam = new tmImage.Webcam(500, 400, flip);
+                webcam = new tmImage.Webcam(650, 500, flip);
                 await webcam.setup();
                 await webcam.play();
 
                 const canvas = document.getElementById("webcam-canvas");
-                canvas.width = 500;
-                canvas.height = 400;
+                canvas.width = 650;
+                canvas.height = 500;
                 canvas.style.display = "block";
                 
                 document.getElementById("loading-indicator").style.display = "none";
@@ -367,9 +368,9 @@
             
             // Adjust container height based on number of classes
             const resultsContainer = document.querySelector('.results-container');
-            const minHeight = 400;
-            const itemHeight = 42; // Approximate height of each prediction item
-            const newHeight = Math.max(minHeight, classNames.length * itemHeight + 60); // 60px for title and padding
+            const minHeight = 500;
+            const itemHeight = 50;
+            const newHeight = Math.max(minHeight, classNames.length * itemHeight + 80);
             resultsContainer.style.height = `${newHeight}px`;
         }
 
@@ -378,7 +379,7 @@
                 webcam.update();
                 const canvas = document.getElementById("webcam-canvas");
                 const ctx = canvas.getContext("2d");
-                ctx.drawImage(webcam.canvas, 0, 0, 500, 400);
+                ctx.drawImage(webcam.canvas, 0, 0, 650, 500);
                 await predict();
                 window.requestAnimationFrame(loop);
             }

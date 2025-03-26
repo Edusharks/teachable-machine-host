@@ -391,6 +391,13 @@
     </div>
 
     <script>
+        // HF2 Protocol Constants
+        const BLEHF2_FLAG_SERIAL_OUT = 0x80;
+        const BLEHF2_FLAG_SERIAL_ERR = 0xC0;
+        const BLEHF2_DATA_LENGTH = 19;
+        const HF2_SERVICE_UUID = 'b112f5e6-2679-30da-a26e-0273b6043849';
+        const HF2_CHARACTERISTIC_UUID = 'b112f5e6-2679-30da-a26e-0273b604384a';
+
         // Machine Learning Variables
         let model, webcam;
         let classNames = [];
@@ -399,14 +406,8 @@
         // Bluetooth Variables
         let microbitDevice;
         let microbitServer;
-        let microbitUARTService;
-        let microbitRXCharacteristic;
+        let microbitHF2Service;
         let microbitTXCharacteristic;
-
-        // HF2 Protocol Constants
-       const BLEHF2_FLAG_SERIAL_OUT = 0x80;
-       const BLEHF2_FLAG_SERIAL_ERR = 0xC0;
-       const BLEHF2_DATA_LENGTH = 19;
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -457,65 +458,65 @@
             }
         }
         
-async function connectMicrobit() {
-    try {
-        const bluetoothBtn = document.getElementById('bluetooth-btn');
-        const statusElement = document.getElementById('bluetooth-status');
-        
-        bluetoothBtn.disabled = true;
-        statusElement.textContent = "Connecting...";
-        statusElement.className = "connecting";
-        updateBluetoothData("Attempting to connect...");
-        
-        // Request Bluetooth device with HF2 service UUID
-        microbitDevice = await navigator.bluetooth.requestDevice({
-            filters: [{ namePrefix: "BBC micro:bit" }],
-            optionalServices: [
-                '49153804-7302-6EA2-DA30-7926E6F512B1' // HF2 service
-            ]
-        });
-        
-        updateBluetoothData("Device selected, connecting...");
-        
-        // Connect to the GATT Server
-        microbitServer = await microbitDevice.gatt.connect();
-        
-        updateBluetoothData("Connected, getting services...");
-        
-        // Get the HF2 service
-        microbitHF2Service = await microbitServer.getPrimaryService('49153804-7302-6EA2-DA30-7926E6F512B1');
-        
-        updateBluetoothData("Service found, getting characteristics...");
-        
-        // Get the characteristics
-        microbitTXCharacteristic = await microbitHF2Service.getCharacteristic('4A153804-7302-6EA2-DA30-7926E6F512B1');
-        
-        // Listen for incoming data
-        await microbitTXCharacteristic.startNotifications();
-        microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
-        
-        statusElement.textContent = "Connected!";
-        statusElement.className = "connected";
-        bluetoothBtn.textContent = "Disconnect";
-        bluetoothBtn.disabled = false;
-        
-        updateBluetoothData("Connection successful!");
-        
-        // Send initialization message
-        await sendToMicrobit("INIT:READY");
-        
-        // Handle disconnection
-        microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
-        
-    } catch (error) {
-        console.error("Bluetooth error:", error);
-        updateBluetoothData("Connection failed: " + error.message);
-        document.getElementById('bluetooth-status').textContent = "Error";
-        document.getElementById('bluetooth-status').className = "disconnected";
-        document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
-        document.getElementById('bluetooth-btn').disabled = false;
-    }
-}
+        async function connectMicrobit() {
+            try {
+                const bluetoothBtn = document.getElementById('bluetooth-btn');
+                const statusElement = document.getElementById('bluetooth-status');
+                
+                bluetoothBtn.disabled = true;
+                statusElement.textContent = "Connecting...";
+                statusElement.className = "connecting";
+                updateBluetoothData("Attempting to connect...");
+                
+                // Request Bluetooth device with HF2 service
+                microbitDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "BBC micro:bit" }],
+                    optionalServices: [HF2_SERVICE_UUID]
+                });
+                
+                updateBluetoothData("Device selected, connecting...");
+                
+                // Connect to the GATT Server
+                microbitServer = await microbitDevice.gatt.connect();
+                
+                updateBluetoothData("Connected, getting services...");
+                
+                // Get the HF2 service
+                microbitHF2Service = await microbitServer.getPrimaryService(HF2_SERVICE_UUID);
+                
+                updateBluetoothData("Service found, getting characteristics...");
+                
+                // Get the TX characteristic
+                microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(HF2_CHARACTERISTIC_UUID);
+                
+                // Listen for incoming data
+                await microbitTXCharacteristic.startNotifications();
+                microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
+                
+                statusElement.textContent = "Connected!";
+                statusElement.className = "connected";
+                bluetoothBtn.textContent = "Disconnect";
+                bluetoothBtn.disabled = false;
+                
+                updateBluetoothData("Connection successful!");
+                
+                // Send initialization message
+                await sendToMicrobit("INIT:READY");
+                
+                // Handle disconnection
+                microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+                
+                console.log("Micro:bit connected successfully!");
+                
+            } catch (error) {
+                console.error("Bluetooth error:", error);
+                updateBluetoothData("Connection failed: " + error.message);
+                document.getElementById('bluetooth-status').textContent = "Error";
+                document.getElementById('bluetooth-status').className = "disconnected";
+                document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
+                document.getElementById('bluetooth-btn').disabled = false;
+            }
+        }
         
         function onBluetoothDisconnected() {
             const statusElement = document.getElementById('bluetooth-status');
@@ -537,49 +538,48 @@ async function connectMicrobit() {
             onBluetoothDisconnected();
         }
         
-function handleMicrobitData(event) {
-    const value = event.target.value;
-    const data = new Uint8Array(value.buffer);
-    
-    // Check if this is an HF2 packet
-    if (data[0] & BLEHF2_FLAG_SERIAL_OUT) {
-        const length = data[0] & 0x1F;
-        const message = new TextDecoder().decode(data.subarray(1, 1 + length));
-        
-        console.log("Received from Micro:bit:", message);
-        updateBluetoothData(message, true);
-        
-        // Process commands from Micro:bit
-        if (message === "CAPTURE") {
-            if (webcam && model) {
-                predict();
+        function handleMicrobitData(event) {
+            const value = event.target.value;
+            const data = new Uint8Array(value.buffer);
+            
+            // Check if this is an HF2 packet
+            if (data[0] & BLEHF2_FLAG_SERIAL_OUT) {
+                const length = data[0] & 0x1F;
+                const message = new TextDecoder().decode(data.subarray(1, 1 + length));
+                
+                console.log("Received from Micro:bit:", message);
+                updateBluetoothData(message, true);
+                
+                // Process commands from Micro:bit
+                if (message === "CAPTURE") {
+                    if (webcam && model) {
+                        predict();
+                    }
+                }
             }
         }
-    }
-}
         
-async function sendToMicrobit(message) {
-    if (microbitDevice && microbitDevice.gatt.connected) {
-        try {
-            // HF2 protocol requires specific packet format
-            const encoder = new TextEncoder();
-            const data = encoder.encode(message);
-            
-            // Create HF2 packet
-            const packet = new Uint8Array(data.length + 1);
-            packet[0] = BLEHF2_FLAG_SERIAL_OUT | (data.length & 0x1F); // Command byte
-            packet.set(data, 1); // Add data
-            
-            // Write to characteristic
-            await microbitTXCharacteristic.writeValue(packet);
-            updateBluetoothData(message);
-            
-        } catch (error) {
-            console.error("Failed to send to Micro:bit:", error);
-            updateBluetoothData("Send error: " + error.message);
+        async function sendToMicrobit(message) {
+            if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
+                try {
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(message);
+                    
+                    // Create HF2 packet
+                    const packet = new Uint8Array(data.length + 1);
+                    packet[0] = BLEHF2_FLAG_SERIAL_OUT | (data.length & 0x1F); // Command byte
+                    packet.set(data, 1); // Add data
+                    
+                    // Write to characteristic
+                    await microbitTXCharacteristic.writeValue(packet);
+                    updateBluetoothData(message);
+                    
+                } catch (error) {
+                    console.error("Failed to send to Micro:bit:", error);
+                    updateBluetoothData("Send error: " + error.message);
+                }
+            }
         }
-    }
-}
         
         // Machine Learning Functions
         async function init() {

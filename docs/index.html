@@ -22,13 +22,12 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
         }
         
         h1 {
             color: #ff6b6b;
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 10px;
             text-shadow: 2px 2px 0px #fff;
         }
@@ -37,7 +36,7 @@
             color: #4d96ff;
             text-align: center;
             margin-bottom: 20px;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
         
         .main-container {
@@ -45,33 +44,32 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 1200px;
+            max-width: 900px;
             background-color: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .content-row {
             display: flex;
             width: 100%;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
+            gap: 20px;
+            margin-bottom: 15px;
         }
         
         .video-container {
             position: relative;
-            width: 700px;
-            height: 500px;
+            width: 500px;
+            height: 400px;
             background-color: #e9ecef;
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 4px solid #74b9ff;
+            border: 3px solid #74b9ff;
         }
         
         #webcam-container {
@@ -84,7 +82,7 @@
         }
         
         #webcam-canvas {
-            border-radius: 15px;
+            border-radius: 10px;
             display: none;
             width: 100%;
             height: 100%;
@@ -106,65 +104,62 @@
         }
         
         .spinner {
-            border: 6px solid rgba(0, 0, 0, 0.1);
-            width: 50px;
-            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border-left-color: #3a86ff;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .loading-text {
             color: #3a86ff;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
         }
         
         .results-container {
-            width: 400px;
-            height: 500px;
+            width: 300px;
+            height: 400px;
             display: flex;
             flex-direction: column;
             background-color: #f8f9fa;
-            border-radius: 20px;
-            padding: 20px;
-            border: 4px solid #ffd166;
+            border-radius: 15px;
+            padding: 15px;
+            border: 3px solid #74b9ff;
         }
         
         .results-title {
             color: #ff6b6b;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             text-align: center;
         }
         
         #label-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            height: calc(100% - 60px);
-            overflow: hidden;
+            gap: 6px;
         }
         
         .prediction {
             background-color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-left: 4px solid #74b9ff;
+            border-left: 3px solid #74b9ff;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            min-height: 50px;
         }
         
         .prediction-name {
             font-weight: bold;
             color: #333;
-            font-size: 1.1rem;
-            width: 45%;
+            font-size: 0.9rem;
+            width: 50%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -173,79 +168,75 @@
         .confidence-container {
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 55%;
+            gap: 6px;
+            width: 50%;
         }
         
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
-            font-size: 1.1rem;
-            min-width: 45px;
+            font-size: 0.9rem;
+            min-width: 35px;
             text-align: right;
         }
         
         .confidence-bar-container {
             flex: 1;
-            height: 16px;
+            height: 14px;
             background-color: #e9ecef;
-            border-radius: 8px;
+            border-radius: 7px;
             overflow: hidden;
         }
         
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
-            border-radius: 8px;
+            border-radius: 7px;
             width: 0%;
-            transition: width 1s ease-out;
+            transition: width 0.5s ease-out;
         }
         
         .input-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
         
         #model-url {
             flex: 1;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #a5d8ff;
-            border-radius: 12px;
+            border-radius: 10px;
             font-family: 'Comic Neue', cursive;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         #start-btn {
             background-color: #74b9ff;
             color: white;
             border: none;
-            padding: 0 25px;
-            border-radius: 12px;
+            padding: 0 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-            box-shadow: 0 3px 0 #3a86ff;
+            font-size: 1rem;
+            transition: all 0.2s;
         }
         
         #start-btn:hover {
             background-color: #3a86ff;
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #3a86ff;
         }
         
         #start-btn:disabled {
             background-color: #95a5a6;
-            box-shadow: 0 3px 0 #6c757d;
             cursor: not-allowed;
         }
         
         .bounce {
-            animation: bounce 0.5s;
+            animation: bounce 0.4s;
         }
         
         @keyframes spin {
@@ -255,7 +246,7 @@
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            50% { transform: translateY(-3px); }
         }
     </style>
 </head>
@@ -272,7 +263,7 @@
                         <div class="loading-text">Loading model...</div>
                     </div>
                     <canvas id="webcam-canvas"></canvas>
-                    <p id="initial-message" style="color: #666; text-align: center; padding: 20px;">Add your Teachable Machine model URL and click Start to begin!</p>
+                    <p id="initial-message" style="color: #666; text-align: center; padding: 15px;">Add your model URL and click Start</p>
                 </div>
             </div>
             
@@ -283,7 +274,7 @@
         </div>
         
         <div class="input-container">
-            <input type="text" id="model-url" placeholder="Paste your Teachable Machine model URL here (e.g., https://teachablemachine.withgoogle.com/models/ABC123/)">
+            <input type="text" id="model-url" placeholder="Paste Teachable Machine URL">
             <button id="start-btn" onclick="init()">Start</button>
         </div>
     </div>
@@ -296,20 +287,17 @@
         async function init() {
             let baseURL = document.getElementById("model-url").value.trim();
             
-            // Basic URL validation
             if (!baseURL) {
                 alert("Please enter a Teachable Machine model URL.");
                 return;
             }
             
-            // Ensure URL ends with slash
             if (!baseURL.endsWith("/")) {
                 baseURL += "/";
             }
 
-            // More specific validation for Teachable Machine URLs
-            if (!baseURL.startsWith("https://teachablemachine.withgoogle.com/models/")) {
-                alert("Please enter a valid Teachable Machine model URL.\nExample: https://teachablemachine.withgoogle.com/models/ABC123/");
+            if (!baseURL.includes("teachablemachine.withgoogle.com/models/")) {
+                alert("Please enter a valid Teachable Machine model URL.");
                 return;
             }
 
@@ -317,44 +305,36 @@
             const metadataURL = baseURL + "metadata.json";
 
             try {
-                // Show loading animation
                 document.getElementById("loading-indicator").style.display = "flex";
                 document.getElementById("initial-message").style.display = "none";
                 document.getElementById("start-btn").disabled = true;
                 
-                // Clear previous model if exists
                 if (model) {
                     model = null;
                 }
                 
-                // Load the model and metadata
                 model = await tmImage.load(modelURL, metadataURL);
                 const metadata = await fetch(metadataURL).then(res => res.json());
                 classNames = metadata.labels;
 
                 initializePredictionElements();
                 
-                // Setup webcam
                 const flip = true;
-                webcam = new tmImage.Webcam(700, 500, flip);
+                webcam = new tmImage.Webcam(500, 400, flip);
                 await webcam.setup();
                 await webcam.play();
 
-                // Get canvas and set dimensions
                 const canvas = document.getElementById("webcam-canvas");
-                canvas.width = 700;
-                canvas.height = 500;
+                canvas.width = 500;
+                canvas.height = 400;
                 canvas.style.display = "block";
                 
-                // Hide loading and show camera
                 document.getElementById("loading-indicator").style.display = "none";
-                
-                // Start prediction loop
                 window.requestAnimationFrame(loop);
                 
             } catch (error) {
-                console.error("Error loading model:", error);
-                alert("Failed to load the model. Please check:\n1. The URL is correct\n2. You have internet access\n3. The model is public");
+                console.error("Error:", error);
+                alert("Failed to load model. Check:\n1. Correct URL\n2. Internet connection\n3. Model is public");
                 document.getElementById("loading-indicator").style.display = "none";
                 document.getElementById("initial-message").style.display = "block";
             } finally {
@@ -367,7 +347,6 @@
             labelContainer.innerHTML = "";
             predictionElements = [];
             
-            // Create prediction elements for each class
             for (let i = 0; i < classNames.length; i++) {
                 const div = document.createElement("div");
                 div.className = "prediction";
@@ -395,7 +374,7 @@
                 webcam.update();
                 const canvas = document.getElementById("webcam-canvas");
                 const ctx = canvas.getContext("2d");
-                ctx.drawImage(webcam.canvas, 0, 0, 700, 500);
+                ctx.drawImage(webcam.canvas, 0, 0, 500, 400);
                 await predict();
                 window.requestAnimationFrame(loop);
             }
@@ -413,13 +392,11 @@
         }
         
         function updatePredictions(prediction) {
-            // Create a map of class names to their predictions
             const predictionMap = {};
             prediction.forEach(p => {
                 predictionMap[p.className] = p.probability;
             });
             
-            // Update each prediction element
             for (let i = 0; i < classNames.length; i++) {
                 if (predictionElements[i]) {
                     const className = classNames[i];
@@ -429,12 +406,11 @@
                     predictionElements[i].textElement.textContent = `${percentage}%`;
                     predictionElements[i].barElement.style.width = `${percentage}%`;
                     
-                    // Add animation for high confidence
                     if (percentage > 80) {
                         predictionElements[i].container.classList.add('bounce');
                         setTimeout(() => {
                             predictionElements[i].container.classList.remove('bounce');
-                        }, 500);
+                        }, 400);
                     }
                 }
             }

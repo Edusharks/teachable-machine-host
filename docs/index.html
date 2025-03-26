@@ -385,7 +385,6 @@
         </div>
     </div>
 
-    <!-- Microbit Data Log Container -->
     <div id="microbit-data-container">
         <h3 style="margin-bottom: 10px; color: #9b59b6;">Micro:bit Data Log</h3>
         <textarea id="microbit-data-log" readonly></textarea>
@@ -425,7 +424,7 @@
                 dataElement.style.backgroundColor = 'white';
             }, 300);
             
-            // Update the data log
+            // Also update the data log
             updateMicrobitDataLog(message, isReceived);
         }
         
@@ -466,7 +465,10 @@
                 // Request Bluetooth device
                 microbitDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: "BBC micro:bit" }],
-                    optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] // UART service
+                    optionalServices: [
+                        '6e400001-b5a3-f393-e0a9-e50e24dcca9e', // UART service
+                        'e95d0753-251d-470a-a062-fa1922dfa9a8'  // Device Info service
+                    ]
                 });
                 
                 updateBluetoothData("Device selected, connecting...");
@@ -496,8 +498,8 @@
                 
                 updateBluetoothData("Connection successful!");
                 
-                // Send initial test message
-                await sendToMicrobit("HELLO");
+                // Send initialization message
+                await sendToMicrobit("INIT:READY");
                 
                 // Handle disconnection
                 microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
@@ -563,8 +565,6 @@
                     console.error("Failed to send to Micro:bit:", error);
                     updateBluetoothData("Send error: " + error.message);
                 }
-            } else {
-                updateBluetoothData("Not connected, cannot send");
             }
         }
         
@@ -682,7 +682,8 @@
                 // Send top prediction to Micro:bit
                 if (microbitDevice && microbitDevice.gatt.connected) {
                     const topPrediction = getTopPrediction(prediction);
-                    const message = `DETECT:${topPrediction.className.substring(0, 5)}:${Math.round(topPrediction.probability * 100)}`;
+                    // Format: "CLASS:name:percentage" (e.g. "CLASS:apple:85")
+                    const message = `CLASS:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
                     await sendToMicrobit(message);
                 }
                 

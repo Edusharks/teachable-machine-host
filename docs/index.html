@@ -37,7 +37,7 @@
         .main-container {
             display: flex;
             width: 90%;
-            max-width: 1000px;
+            max-width: 800px;
             background-color: white;
             border-radius: 20px;
             padding: 20px;
@@ -48,16 +48,13 @@
         .video-container {
             flex: 1;
             padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 15px;
-            margin-right: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         
         #webcam-container {
-            width: 100%;
+            width: 300px;
             height: 300px;
             background-color: #e9ecef;
             border-radius: 15px;
@@ -67,6 +64,7 @@
             align-items: center;
             position: relative;
             border: 4px solid #74b9ff;
+            margin-right: 20px;
         }
         
         #webcam-container canvas {
@@ -76,6 +74,7 @@
         .controls {
             width: 100%;
             margin-top: 20px;
+            text-align: center;
         }
         
         .input-group {
@@ -90,6 +89,7 @@
             border-radius: 10px;
             font-family: 'Comic Neue', cursive;
             font-size: 16px;
+            max-width: 400px;
         }
         
         #start-btn {
@@ -122,8 +122,6 @@
         .results-container {
             flex: 1;
             padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 15px;
             display: flex;
             flex-direction: column;
         }
@@ -140,6 +138,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-height: 300px;
         }
         
         .prediction {
@@ -152,6 +151,7 @@
             overflow: hidden;
             border-left: 5px solid #74b9ff;
             transition: all 0.3s;
+            width: 300px;
         }
         
         .prediction-name {
@@ -210,49 +210,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 80px;
-            background-color: #3a86ff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
-            z-index: 100;
-        }
-        
-        .sidebar-item {
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .sidebar-item:hover {
-            background-color: #2667cc;
-        }
-        
-        .sidebar-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .pulse {
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
         .bounce {
             animation: bounce 0.5s;
         }
@@ -264,106 +221,35 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🔍</div>
-            Search
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🎨</div>
-            Basic
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">⌨️</div>
-            Input
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🎵</div>
-            Music
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">💡</div>
-            Led
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">📱</div>
-            Bluetooth
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🔄</div>
-            Loops
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🧠</div>
-            Logic
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">📊</div>
-            Variables
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">➕</div>
-            Math
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">🧩</div>
-            Extensions
-        </div>
-        <div class="sidebar-item">
-            <div class="sidebar-icon">⚙️</div>
-            Advanced
-        </div>
-    </div>
+    <h1>Kids Machine Learning</h1>
+    <p class="subtitle">See what the computer can recognize!</p>
     
-    <div style="margin-left: 100px; width: calc(100% - 100px);">
-        <h1 class="pulse">Kids Machine Learning</h1>
-        <p class="subtitle">See what the computer can recognize!</p>
+    <div class="main-container">
+        <div class="video-container">
+            <div id="webcam-container">
+                <p style="color: #666; text-align: center;">Camera will appear here</p>
+            </div>
+            <div class="controls">
+                <div class="input-group" style="justify-content: center;">
+                    <input type="text" id="model-url" placeholder="Paste your Teachable Machine URL here">
+                    <button id="start-btn" onclick="init()">Start</button>
+                </div>
+            </div>
+            <div class="loading" id="loading-indicator">
+                <div class="spinner"></div>
+                <p>Loading model...</p>
+            </div>
+        </div>
         
-        <div class="main-container">
-            <div class="video-container">
-                <div id="webcam-container">
-                    <p style="color: #666; text-align: center;">Camera will appear here</p>
-                </div>
-                <div class="controls">
-                    <div class="input-group">
-                        <input type="text" id="model-url" placeholder="Paste your Teachable Machine URL here">
-                        <button id="start-btn" onclick="init()">Start</button>
-                    </div>
-                </div>
-                <div class="loading" id="loading-indicator">
-                    <div class="spinner"></div>
-                    <p>Loading model...</p>
-                </div>
-            </div>
-            
-            <div class="results-container">
-                <h2 class="results-title">What Do You See?</h2>
-                <div id="label-container">
-                    <div class="prediction">
-                        <div class="prediction-name">Object 1</div>
-                        <div class="confidence-container">
-                            <div class="confidence-text">0%</div>
-                            <div class="confidence-bar-container">
-                                <div class="confidence-bar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="prediction">
-                        <div class="prediction-name">Object 2</div>
-                        <div class="confidence-container">
-                            <div class="confidence-text">0%</div>
-                            <div class="confidence-bar-container">
-                                <div class="confidence-bar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="results-container">
+            <h2 class="results-title">What Do You See?</h2>
+            <div id="label-container"></div>
         </div>
     </div>
 
     <script>
-        let model, webcam, maxPredictions;
+        let model, webcam;
+        let classNames = [];
         let predictionElements = [];
         
         async function init() {
@@ -390,13 +276,17 @@
                 }
                 
                 model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
+                const maxPredictions = model.getTotalClasses();
+                
+                // Get class names and maintain their original order
+                const metadata = await fetch(metadataURL).then(res => res.json());
+                classNames = metadata.labels;
 
                 initializePredictionElements();
                 
                 // Initialize Webcam
                 const flip = true;
-                webcam = new tmImage.Webcam(400, 400, flip);
+                webcam = new tmImage.Webcam(300, 300, flip);
                 await webcam.setup();
                 await webcam.play();
                 window.requestAnimationFrame(loop);
@@ -419,11 +309,12 @@
             labelContainer.innerHTML = "";
             predictionElements = [];
             
-            for (let i = 0; i < maxPredictions; i++) {
+            // Create prediction elements in the original class order
+            for (let i = 0; i < classNames.length; i++) {
                 const div = document.createElement("div");
                 div.className = "prediction";
                 div.innerHTML = `
-                    <div class="prediction-name">Class ${i+1}</div>
+                    <div class="prediction-name">${classNames[i]}</div>
                     <div class="confidence-container">
                         <div class="confidence-text" id="confidence-text-${i}">0%</div>
                         <div class="confidence-bar-container">
@@ -457,14 +348,19 @@
         }
         
         function updatePredictions(prediction) {
-            // Sort predictions by probability (highest first)
-            prediction.sort((a, b) => b.probability - a.probability);
+            // Create a map of class names to their predictions
+            const predictionMap = {};
+            prediction.forEach(p => {
+                predictionMap[p.className] = p.probability;
+            });
             
-            // Update each prediction element
-            for (let i = 0; i < prediction.length; i++) {
+            // Update each prediction element in the original order
+            for (let i = 0; i < classNames.length; i++) {
                 if (predictionElements[i]) {
-                    const percentage = Math.round(prediction[i].probability * 100);
-                    predictionElements[i].nameElement.textContent = prediction[i].className;
+                    const className = classNames[i];
+                    const probability = predictionMap[className] || 0;
+                    const percentage = Math.round(probability * 100);
+                    
                     predictionElements[i].textElement.textContent = `${percentage}%`;
                     predictionElements[i].barElement.style.width = `${percentage}%`;
                     

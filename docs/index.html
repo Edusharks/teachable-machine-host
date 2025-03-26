@@ -396,13 +396,16 @@
                 microbitTXCharacteristic = await microbitUARTService.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e');
                 
                 // Listen for incoming data
-                microbitTXCharacteristic.startNotifications();
+                await microbitTXCharacteristic.startNotifications();
                 microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
                 
                 statusElement.textContent = "Connected!";
                 statusElement.className = "connected";
                 bluetoothBtn.textContent = "Disconnect";
                 bluetoothBtn.disabled = false;
+                
+                // Send initial test message
+                await sendToMicrobit("HELLO\n"); // Note the newline delimiter
                 
                 // Handle disconnection
                 microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
@@ -440,27 +443,30 @@
         function handleMicrobitData(event) {
             const value = event.target.value;
             const decoder = new TextDecoder();
-            const message = decoder.decode(value);
+            const message = decoder.decode(value).trim(); // Trim whitespace
             
             console.log("Received from Micro:bit:", message);
             
-            // You can use this data to interact with your ML model
-            // For example, trigger predictions based on Micro:bit input
-            // or send classification results back to the Micro:bit
-            
-            // Example: If Micro:bit sends "CAPTURE", take a prediction
-            if (message.trim() === "CAPTURE") {
+            // Process commands from Micro:bit
+            if (message === "CAPTURE") {
                 if (webcam && model) {
                     predict();
                 }
             }
+            // Add more command handlers as needed
         }
         
         async function sendToMicrobit(message) {
             if (microbitDevice && microbitDevice.gatt.connected && microbitRXCharacteristic) {
-                const encoder = new TextEncoder();
-                await microbitRXCharacteristic.writeValue(encoder.encode(message));
-                console.log("Sent to Micro:bit:", message);
+                try {
+                    const encoder = new TextEncoder();
+                    // Ensure message ends with newline for Micro:bit
+                    const messageWithNewline = message.endsWith('\n') ? message : message + '\n';
+                    await microbitRXCharacteristic.writeValue(encoder.encode(messageWithNewline));
+                    console.log("Sent to Micro:bit:", messageWithNewline.trim());
+                } catch (error) {
+                    console.error("Failed to send to Micro:bit:", error);
+                }
             }
         }
         
@@ -578,7 +584,8 @@
                 // Send top prediction to Micro:bit
                 if (microbitDevice && microbitDevice.gatt.connected) {
                     const topPrediction = getTopPrediction(prediction);
-                    await sendToMicrobit(`DETECTED:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`);
+                    const message = `DETECT:${topPrediction.className.substring(0, 5)}:${Math.round(topPrediction.probability * 100)}\n`;
+                    await sendToMicrobit(message);
                 }
                 
             } catch (error) {

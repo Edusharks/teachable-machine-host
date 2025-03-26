@@ -395,12 +395,12 @@
         const BLEHF2_FLAG_SERIAL_OUT = 0x80;
         const BLEHF2_FLAG_SERIAL_ERR = 0xC0;
         const BLEHF2_DATA_LENGTH = 19;
-        
-         // Micro:bit HF2 Service and Characteristic UUIDs
+
+        // Micro:bit HF2 Service and Characteristic UUIDs
         const BLEHF2ServiceUUID = 'b112f5e6-2679-30da-a26e-0273b6043849';
         const BLEHF2TxCharacteristicUUID = 'b112f5e6-2679-30da-a26e-0273b604384a';
-       
-        
+
+
         // Machine Learning Variables
         let model, webcam;
         let classNames = [];
@@ -461,7 +461,7 @@
             }
         }
 
-        async function connectMicrobit() {
+       async function connectMicrobit() {
             try {
                 const bluetoothBtn = document.getElementById('bluetooth-btn');
                 const statusElement = document.getElementById('bluetooth-status');
@@ -470,6 +470,7 @@
                 statusElement.textContent = "Connecting...";
                 statusElement.className = "connecting";
                 updateBluetoothData("Attempting to connect...");
+                console.log("connectMicrobit: Attempting to connect...");
 
                 console.log("Requesting Bluetooth Device..."); // Log start
                 
@@ -479,26 +480,39 @@
                     optionalServices: [BLEHF2ServiceUUID]
                 });
 
+                 console.log("connectMicrobit: Device selected", microbitDevice);
+
                 updateBluetoothData("Device selected, connecting...");
                 console.log("Device selected: ", microbitDevice); // Log device selection
+                   
 
                 // Connect to the GATT Server
+                console.log("connectMicrobit: Connecting to GATT server...");
                 microbitServer = await microbitDevice.gatt.connect();
-                console.log("Connected to GATT server:", microbitServer); // Log GATT connection
+                console.log("connectMicrobit: Connected to GATT server:", microbitServer); // Log GATT connection
+
+                 // Check if the device is connected to GATT
+                 if(microbitDevice.gatt.connected) {
+                    console.log("connectMicrobit: GATT connection status: connected");
+                 }
+                 else{
+                   console.log("connectMicrobit: GATT connection status: disconnected");
+                 }
+
 
                 updateBluetoothData("Connected, getting services...");
 
                 // Get the HF2 service
-                console.log("Getting service:", BLEHF2ServiceUUID); // Log service UUID
+                 console.log("connectMicrobit: Getting service", BLEHF2ServiceUUID); // Log service UUID
                 microbitHF2Service = await microbitServer.getPrimaryService(BLEHF2ServiceUUID);
-                console.log("Found service:", microbitHF2Service); // Log service found
-                
+                 console.log("connectMicrobit: Found service", microbitHF2Service); // Log service found
+
                 updateBluetoothData("Service found, getting characteristics...");
 
                  // Get the TX characteristic
-                console.log("Getting tx characteristic:", BLEHF2TxCharacteristicUUID); // Log tx characteristic UUID
+                  console.log("connectMicrobit: Getting tx characteristic", BLEHF2TxCharacteristicUUID); // Log tx characteristic UUID
                 microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(BLEHF2TxCharacteristicUUID);
-                console.log("Found TX Characteristic:", microbitTXCharacteristic);
+                 console.log("connectMicrobit: Found TX Characteristic", microbitTXCharacteristic);
 
                 // Listen for incoming data
                 await microbitTXCharacteristic.startNotifications();
@@ -521,7 +535,7 @@
 
             } catch (error) {
                 console.error("Bluetooth error:", error);
-                 updateBluetoothData("Connection failed: " + error.message);
+                updateBluetoothData("Connection failed: " + error.message);
                 document.getElementById('bluetooth-status').textContent = "Error";
                 document.getElementById('bluetooth-status').className = "disconnected";
                 document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
@@ -578,7 +592,7 @@
             }
         }
 
-        async function sendToMicrobit(message) {
+         async function sendToMicrobit(message) {
              if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
                 try {
                     const encoder = new TextEncoder();
@@ -595,11 +609,10 @@
 
                 } catch (error) {
                     console.error("Failed to send to Micro:bit:", error);
-                     updateBluetoothData("Send error: " + error.message);
+                    updateBluetoothData("Send error: " + error.message);
                 }
             }
         }
-
 
         // Machine Learning Functions
         async function init() {
@@ -705,7 +718,7 @@
             }
         }
 
-        async function predict() {
+       async function predict() {
             if (!model || !webcam) return;
 
             try {
@@ -725,7 +738,7 @@
             }
         }
 
-         function getTopPrediction(predictions) {
+        function getTopPrediction(predictions) {
              return predictions.reduce((max, current) =>
                  (current.probability > max.probability) ? current : max
              );

@@ -417,7 +417,7 @@
             setupBluetoothButton();
         });
 
-        function setupBluetoothButton() {
+         function setupBluetoothButton() {
             const bluetoothBtn = document.getElementById('bluetooth-btn');
             bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
         }
@@ -437,7 +437,7 @@
             updateMicrobitDataLog(message, isReceived);
         }
 
-        function updateMicrobitDataLog(message, isReceived = false) {
+         function updateMicrobitDataLog(message, isReceived = false) {
             const container = document.getElementById('microbit-data-container');
             const log = document.getElementById('microbit-data-log');
 
@@ -462,7 +462,7 @@
         }
 
         async function connectMicrobit() {
-             try {
+            try {
                 const bluetoothBtn = document.getElementById('bluetooth-btn');
                 const statusElement = document.getElementById('bluetooth-status');
 
@@ -488,8 +488,10 @@
                 console.log("connectMicrobit: Connected to GATT server:", microbitServer);
                 updateBluetoothData("Connected, getting services...");
 
+                 //Add a delay to allow connection to settle
+                  await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
 
-                 // Step 3: Get service
+                // Step 3: Get service
                 console.log("connectMicrobit: Getting service", BLEHF2ServiceUUID);
                 microbitHF2Service = await microbitServer.getPrimaryService(BLEHF2ServiceUUID);
                   console.log("connectMicrobit: Found service", microbitHF2Service);
@@ -504,7 +506,7 @@
                 await microbitTXCharacteristic.startNotifications();
                 microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
 
-                 statusElement.textContent = "Connected!";
+                statusElement.textContent = "Connected!";
                 statusElement.className = "connected";
                 bluetoothBtn.textContent = "Disconnect";
                 bluetoothBtn.disabled = false;
@@ -521,8 +523,7 @@
 
             } catch (error) {
                 console.error("Bluetooth error:", error);
-                updateBluetoothData("Connection failed: " + error.message);
-
+                 updateBluetoothData("Connection failed: " + error.message);
                 let errorMessage = "Bluetooth Connection Failed:\n";
                 if (error instanceof DOMException && error.name === "NotFoundError") {
                     errorMessage += "Device not found. Ensure your Micro:bit is nearby and powered on.";
@@ -559,7 +560,7 @@
             console.log("Micro:bit disconnected");
         }
 
-        async function disconnectMicrobit() {
+         async function disconnectMicrobit() {
              if (microbitDevice && microbitDevice.gatt.connected) {
                  try {
                      await microbitDevice.gatt.disconnect();
@@ -593,7 +594,7 @@
             }
         }
 
-         async function sendToMicrobit(message) {
+        async function sendToMicrobit(message) {
              if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
                 try {
                     const encoder = new TextEncoder();
@@ -609,16 +610,16 @@
                     updateBluetoothData(message);
 
                 } catch (error) {
-                    console.error("Failed to send to Micro:bit:", error);
-                     alert("Failed to send data to Micro:bit: " + error.message);
+                   console.error("Failed to send to Micro:bit:", error);
+                   alert("Failed to send data to Micro:bit: " + error.message);
                    updateBluetoothData("Send error: " + error.message);
                 }
             }
         }
-      function startMachineLearning() {
+
+          function startMachineLearning() {
             init();
         }
-
         // Machine Learning Functions
         async function init() {
             let baseURL = document.getElementById("model-url").value.trim();
@@ -723,46 +724,45 @@
             }
         }
 
-       async function predict() {
-            if (!model || !webcam) return;
+         async function predict() {
+             if (!model || !webcam) return;
 
             try {
                 const prediction = await model.predict(webcam.canvas);
                 updatePredictions(prediction);
 
-                // Send top prediction to Micro:bit
-                if (microbitDevice && microbitDevice.gatt.connected) {
-                    const topPrediction = getTopPrediction(prediction);
-                    // Format: "CLASS:name:percentage" (e.g. "CLASS:apple:85")
-                    const message = `CLASS:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
-                    await sendToMicrobit(message);
-                }
+                 // Send top prediction to Micro:bit
+                 if (microbitDevice && microbitDevice.gatt.connected) {
+                     const topPrediction = getTopPrediction(prediction);
+                     const message = `CLASS:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
+                     await sendToMicrobit(message);
+                 }
 
             } catch (error) {
-                console.error("Prediction error:", error);
-                 alert("An error occurred during prediction: " + error.message);
-            }
+               console.error("Prediction error:", error);
+                alert("An error occurred during prediction: " + error.message);
+           }
         }
 
         function getTopPrediction(predictions) {
-             return predictions.reduce((max, current) =>
-                 (current.probability > max.probability) ? current : max
-             );
-         }
+            return predictions.reduce((max, current) =>
+               (current.probability > max.probability) ? current : max
+           );
+        }
 
          function updatePredictions(prediction) {
              const predictionMap = {};
              prediction.forEach(p => {
-                 predictionMap[p.className] = p.probability;
-             });
+                predictionMap[p.className] = p.probability;
+            });
 
-            for (let i = 0; i < classNames.length; i++) {
+           for (let i = 0; i < classNames.length; i++) {
                 if (predictionElements[i]) {
                     const className = classNames[i];
                     const probability = predictionMap[className] || 0;
                     const percentage = Math.round(probability * 100);
 
-                    predictionElements[i].textElement.textContent = `${percentage}%`;
+                     predictionElements[i].textElement.textContent = `${percentage}%`;
                     predictionElements[i].barElement.style.width = `${percentage}%`;
 
                     if (percentage > 80) {
@@ -774,6 +774,7 @@
                 }
             }
         }
+
     </script>
 </body>
 </html>

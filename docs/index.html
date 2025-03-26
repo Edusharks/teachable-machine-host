@@ -45,7 +45,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px; /* Increased from 900px */
             background-color: white;
             border-radius: 20px;
             padding: 30px;
@@ -63,8 +63,8 @@
         
         .video-container {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 600px; /* Increased from 400px */
+            height: 500px; /* Increased from 400px */
             background-color: #e9ecef;
             border-radius: 20px;
             overflow: hidden;
@@ -122,7 +122,7 @@
         }
         
         .results-container {
-            width: 400px;
+            width: 400px; /* Kept same but content is more compact */
             display: flex;
             flex-direction: column;
         }
@@ -137,58 +137,69 @@
         #label-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px; /* Reduced from 15px */
+            height: 500px; /* Match video container height */
+            overflow-y: auto;
+            padding-right: 10px;
         }
         
         .prediction {
             background-color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 12px; /* Reduced from 20px */
+            border-radius: 12px; /* Slightly smaller */
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            border-left: 6px solid #74b9ff;
+            border-left: 4px solid #74b9ff; /* Thinner border */
             transition: all 0.3s;
+            display: flex; /* New: side by side layout */
+            align-items: center;
+            justify-content: space-between;
         }
         
         .prediction-name {
             font-weight: bold;
             color: #333;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            font-size: 1.2rem; /* Reduced from 1.5rem */
+            margin-bottom: 0; /* Removed margin */
+            width: 40%; /* Fixed width for name */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .confidence-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px; /* Reduced from 15px */
+            width: 60%; /* Fixed width for confidence */
         }
         
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
-            font-size: 1.8rem;
-            min-width: 70px;
+            font-size: 1.2rem; /* Reduced from 1.8rem */
+            min-width: 50px; /* Reduced from 70px */
             text-align: right;
         }
         
         .confidence-bar-container {
             flex: 1;
-            height: 25px;
+            height: 20px; /* Reduced from 25px */
             background-color: #e9ecef;
-            border-radius: 12px;
+            border-radius: 10px; /* Slightly smaller */
             overflow: hidden;
         }
         
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
-            border-radius: 12px;
+            border-radius: 10px; /* Slightly smaller */
             width: 0%;
             transition: width 1s ease-out;
         }
         
         .input-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 800px; /* Increased from 600px */
             display: flex;
             gap: 10px;
             margin-top: 20px;
@@ -242,6 +253,25 @@
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
+        }
+
+        /* Scrollbar styling */
+        #label-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #label-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        #label-container::-webkit-scrollbar-thumb {
+            background: #74b9ff;
+            border-radius: 10px;
+        }
+        
+        #label-container::-webkit-scrollbar-thumb:hover {
+            background: #3a86ff;
         }
     </style>
 </head>
@@ -313,14 +343,14 @@
                 
                 // Initialize Webcam
                 const flip = true;
-                webcam = new tmImage.Webcam(400, 400, flip);
+                webcam = new tmImage.Webcam(600, 500, flip); // Updated dimensions
                 await webcam.setup();
                 await webcam.play();
 
                 // Get and setup canvas
                 const canvas = document.getElementById("webcam-canvas");
-                canvas.width = 400;
-                canvas.height = 400;
+                canvas.width = 600;
+                canvas.height = 500;
                 canvas.style.display = "block";
                 
                 // Hide loading, show camera
@@ -369,10 +399,10 @@
 
         async function loop() {
             if (webcam) {
-                webcam.update(); // Update the webcam frame
+                webcam.update();
                 const canvas = document.getElementById("webcam-canvas");
                 const ctx = canvas.getContext("2d");
-                ctx.drawImage(webcam.canvas, 0, 0, 400, 400);
+                ctx.drawImage(webcam.canvas, 0, 0, 600, 500);
                 await predict();
                 window.requestAnimationFrame(loop);
             }

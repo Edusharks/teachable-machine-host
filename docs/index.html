@@ -395,8 +395,13 @@
         const BLEHF2_FLAG_SERIAL_OUT = 0x80;
         const BLEHF2_FLAG_SERIAL_ERR = 0xC0;
         const BLEHF2_DATA_LENGTH = 19;
-        const HF2_SERVICE_UUID = 'b112f5e6-2679-30da-a26e-0273b6043849';
-        const HF2_CHARACTERISTIC_UUID = 'b112f5e6-2679-30da-a26e-0273b604384a';
+        const BLEHF2ServiceUUID = [
+            0xb1,0x12,0xf5,0xe6,0x26,0x79,0x30,0xda,0xa2,0x6e,0x02,0x73,0xb6,0x04,0x38,0x49
+        ];
+
+        const BLEHF2TxCharacteristicUUID = [
+            0xb1,0x12,0xf5,0xe6,0x26,0x79,0x30,0xda,0xa2,0x6e,0x02,0x73,0xb6,0x04,0x38,0x4a
+        ];
 
         // Machine Learning Variables
         let model, webcam;
@@ -471,7 +476,7 @@
                 // Request Bluetooth device with HF2 service
                 microbitDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: "BBC micro:bit" }],
-                    optionalServices: [HF2_SERVICE_UUID]
+                     optionalServices: [Array.from(new Uint8Array(BLEHF2ServiceUUID)).map(byte => byte.toString(16).padStart(2, '0')).join('').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5')]
                 });
                 
                 updateBluetoothData("Device selected, connecting...");
@@ -482,12 +487,12 @@
                 updateBluetoothData("Connected, getting services...");
                 
                 // Get the HF2 service
-                microbitHF2Service = await microbitServer.getPrimaryService(HF2_SERVICE_UUID);
+                microbitHF2Service = await microbitServer.getPrimaryService(Array.from(new Uint8Array(BLEHF2ServiceUUID)).map(byte => byte.toString(16).padStart(2, '0')).join('').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5'));
                 
                 updateBluetoothData("Service found, getting characteristics...");
                 
                 // Get the TX characteristic
-                microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(HF2_CHARACTERISTIC_UUID);
+                microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(Array.from(new Uint8Array(BLEHF2TxCharacteristicUUID)).map(byte => byte.toString(16).padStart(2, '0')).join('').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5'));
                 
                 // Listen for incoming data
                 await microbitTXCharacteristic.startNotifications();

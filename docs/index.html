@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachable Machine Host</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #webcam-container {
+            margin: 20px auto;
+            text-align: center;
+        }
+        #label-container {
+            margin-top: 20px;
+        }
+        .prediction {
+            background-color: #ecf0f1;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .example {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #ecf0f1;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        #upload-preview {
+            max-width: 200px;
+            max-height: 200px;
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teachable Machine Image Model</h1>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('webcam')">Webcam</div>
+            <div class="tab" onclick="switchTab('upload')">Image Upload</div>
+        </div>
+        
+        <div class="input-group">
+            <label for="model-url">Enter Teachable Machine Model URL:</label>
+            <input type="text" id="model-url" placeholder="https://teachablemachine.withgoogle.com/models/ABC123/">
+            <div class="example">Example: https://teachablemachine.withgoogle.com/models/ABC123/</div>
+        </div>
+        
+        <button id="start-btn" onclick="init()">Start</button>
+        <div class="loading" id="loading-indicator">
+            <div class="spinner"></div>
+            <p>Loading model...</p>
+        </div>
+        
+        <div id="webcam-tab" class="tab-content active">
+            <div id="webcam-container"></div>
+            <div id="webcam-error" style="color: red; display: none;"></div>
+        </div>
+        
+        <div id="upload-tab" class="tab-content">
+            <input type="file" id="upload-input" accept="image/*">
+            <img id="upload-preview" style="display: none;">
+            <button id="predict-btn" onclick="predictUpload()" disabled>Predict</button>
+        </div>
+        
+        <div id="label-container"></div>
+    </div>
+
+    <script>
+        let model, webcam, labelContainer, maxPredictions;
+        let currentTab = 'webcam';
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            if (tab === 'webcam' && model) {
+                startWebcam();
+            }
+        }
+        
+        async function init() {
+            let baseURL = document.getElementById("model-url").value.trim();
+            
+            // Ensure proper URL formatting
+            if (!baseURL.endsWith("/")) {
+                baseURL += "/";
+            }
+
+            if (!baseURL.includes("teachablemachine.withgoogle.com/models/")) {
+                alert("Please enter a valid Teachable Machine model URL.");
+                return;
+            }
+
+            const modelURL = baseURL + "model.json";
+            const metadataURL = baseURL + "metadata.json";
+
+            try {
+                // Show loading indicator
+                document.getElementById("loading-indicator").style.display = "block";
+                document.getElementById("start-btn").disabled = true;
+                
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // Initialize UI
+                labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = "";
+                for (let i = 0; i < maxPredictions; i++) {
+                    const div = document.createElement("div");
+                    div.className = "prediction";
+                    labelContainer.appendChild(div);
+                }
+
+                if (currentTab === 'webcam') {
+                    await startWebcam();
+                } else {
+                    document.getElementById("predict-btn").disabled = false;
+                }
+                
+            } catch (error) {
+                console.error("Error loading the model:", error);
+                alert("Failed to load the model. Check the URL and try again.");
+            } finally {
+                document.getElementById("loading-indicator").style.display = "none";
+                document.getElementById("start-btn").disabled = false;
+            }
+        }
+        
+        async function startWebcam() {
+            try {
+                // Clear previous webcam if exists
+                if (webcam) {
+                    webcam.stop();
+                    document.getElementById("webcam-container").innerHTML = "";
+                }
+                
+                // Initialize Webcam
+                const flip = true;
+                webcam = new tmImage.Webcam(400, 400, flip);
+                await webcam.setup();
+                await webcam.play();
+                window.requestAnimationFrame(loop);
+
+                // Add webcam canvas
+                document.getElementById("webcam-container").innerHTML = "";
+                document.getElementById("webcam-container").appendChild(webcam.canvas);
+                document.getElementById("webcam-error").style.display = "none";
+                
+            } catch (error) {
+                console.error("Error setting up webcam:", error);
+                document.getElementById("webcam-error").style.display = "block";
+                document.getElementById("webcam-error").innerText = 
+                    "Could not access webcam. Please check permissions and try again.";
+            }
+        }
+
+        async function loop() {
+            if (currentTab === 'webcam') {
+                webcam.update();
+                await predict();
+                window.requestAnimationFrame(loop);
+            }
+        }
+
+        async function predict() {
+            if (!model) return;
+            
+            let image;
+            if (currentTab === 'webcam') {
+                image = webcam.canvas;
+            } else {
+                image = document.getElementById("upload-preview");
+            }
+            
+            const prediction = await model.predict(image);
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.childNodes[i].innerHTML =
+                    `<strong>${prediction[i].className}:</strong> ${(prediction[i].probability * 100).toFixed(1)}%`;
+            }
+        }
+        
+        // Handle image upload
+        document.getElementById("upload-input").addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById("upload-preview");
+                    img.src = event.target.result;
+                    img.style.display = "block";
+                    
+                    if (model) {
+                        document.getElementById("predict-btn").disabled = false;
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        async function predictUpload() {
+            if (!model) {
+                alert("Please load a model first.");
+                return;
+            }
+            
+            const preview = document.getElementById("upload-preview");
+            if (preview.style.display === "none") {
+                alert("Please upload an image first.");
+                return;
+            }
+            
+            await predict();
+        }
+    </script>
+</body>
+</html>

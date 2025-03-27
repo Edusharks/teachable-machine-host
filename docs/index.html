@@ -478,8 +478,19 @@
                
                 updateBluetoothData("Service found, getting characteristics...");
                 
-                microbitTXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_TX_CHARACTERISTIC);
-                microbitRXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_RX_CHARACTERISTIC);
+                try {
+                    microbitTXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_TX_CHARACTERISTIC);
+                    microbitRXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_RX_CHARACTERISTIC);
+                } catch(error) {
+                  console.error("Error getting characteristics:", error);
+                  updateBluetoothData("Error getting characteristics: " + error.message);
+                  document.getElementById('bluetooth-status').textContent = "Error";
+                  document.getElementById('bluetooth-status').className = "disconnected";
+                  document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
+                  document.getElementById('bluetooth-btn').disabled = false;
+                  return; // Stop the function execution
+                }
+
                 
                 await microbitRXCharacteristic.startNotifications();
                 microbitRXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);

@@ -8,13 +8,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* (Existing Styles - kept same as before) */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
+        
         body {
             font-family: 'Comic Neue', cursive;
             background-color: #f0f9ff;
@@ -25,7 +24,7 @@
             padding: 20px;
             position: relative;
         }
-
+        
         h1 {
             color: #ff6b6b;
             text-align: center;
@@ -33,14 +32,14 @@
             margin-bottom: 10px;
             text-shadow: 2px 2px 0px #fff;
         }
-
+        
         .subtitle {
             color: #4d96ff;
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.2rem;
         }
-
+        
         .main-container {
             display: flex;
             flex-direction: column;
@@ -52,7 +51,7 @@
             padding: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
+        
         .header-container {
             width: 100%;
             display: flex;
@@ -60,7 +59,7 @@
             align-items: center;
             margin-bottom: 20px;
         }
-
+        
         .input-container {
             width: 100%;
             max-width: 800px;
@@ -68,7 +67,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
-
+        
         #model-url {
             flex: 1;
             padding: 12px;
@@ -77,7 +76,7 @@
             font-family: 'Comic Neue', cursive;
             font-size: 1rem;
         }
-
+        
         #start-btn {
             background-color: #74b9ff;
             color: white;
@@ -90,23 +89,23 @@
             font-size: 1.1rem;
             transition: all 0.2s;
         }
-
+        
         #start-btn:hover {
             background-color: #3a86ff;
         }
-
+        
         #start-btn:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
         }
-
+        
         .content-row {
             display: flex;
             width: 100%;
             justify-content: center;
             gap: 30px;
         }
-
+        
         .video-container {
             position: relative;
             width: 650px;
@@ -119,7 +118,7 @@
             align-items: center;
             border: 4px solid #74b9ff;
         }
-
+        
         #webcam-container {
             width: 100%;
             height: 100%;
@@ -128,7 +127,7 @@
             align-items: center;
             position: relative;
         }
-
+        
         #webcam-canvas {
             border-radius: 10px;
             display: none;
@@ -136,7 +135,7 @@
             height: 100%;
             object-fit: cover;
         }
-
+        
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -150,7 +149,7 @@
             background-color: rgba(233, 236, 239, 0.8);
             z-index: 10;
         }
-
+        
         .spinner {
             border: 5px solid rgba(0, 0, 0, 0.1);
             width: 40px;
@@ -160,13 +159,13 @@
             animation: spin 1s linear infinite;
             margin-bottom: 10px;
         }
-
+        
         .loading-text {
             color: #3a86ff;
             font-size: 1rem;
             font-weight: bold;
         }
-
+        
         .results-container {
             width: 400px;
             min-height: 500px;
@@ -176,21 +175,21 @@
             border-radius: 15px;
             padding: 20px;
         }
-
+        
         .results-title {
             color: #ff6b6b;
             font-size: 1.5rem;
             margin-bottom: 20px;
             text-align: center;
         }
-
+        
         #label-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex-grow: 1;
         }
-
+        
         .prediction {
             background-color: white;
             padding: 12px 15px;
@@ -201,7 +200,7 @@
             align-items: center;
             justify-content: space-between;
         }
-
+        
         .prediction-name {
             font-weight: bold;
             color: #333;
@@ -211,14 +210,14 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
+        
         .confidence-container {
             display: flex;
             align-items: center;
             gap: 10px;
             width: 55%;
         }
-
+        
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
@@ -226,7 +225,7 @@
             min-width: 45px;
             text-align: right;
         }
-
+        
         .confidence-bar-container {
             flex: 1;
             height: 16px;
@@ -234,7 +233,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
+        
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
@@ -242,8 +241,7 @@
             width: 0%;
             transition: width 0.5s ease-out;
         }
-
-        /* Bluetooth Controls */
+        
         .bluetooth-container {
             position: absolute;
             top: 20px;
@@ -253,13 +251,13 @@
             align-items: flex-end;
             gap: 5px;
         }
-
+        
         .bluetooth-control-row {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
+        
         #bluetooth-btn {
             background-color: #9b59b6;
             color: white;
@@ -273,11 +271,11 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+        
         #bluetooth-btn:hover {
             background-color: #8e44ad;
         }
-
+        
         #bluetooth-status {
             padding: 8px 12px;
             font-weight: bold;
@@ -285,7 +283,7 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+        
         #bluetooth-data {
             padding: 8px 12px;
             font-size: 0.8rem;
@@ -296,24 +294,23 @@
             word-break: break-word;
             min-height: 40px;
         }
-
+        
         .connected {
             color: #27ae60;
         }
-
+        
         .disconnected {
             color: #e74c3c;
         }
-
+        
         .connecting {
             color: #f39c12;
         }
-
+        
         .bounce {
             animation: bounce 0.4s;
         }
-
-        /* Microbit Data Log */
+        
         #microbit-data-container {
             display: none;
             position: fixed;
@@ -326,7 +323,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 100;
         }
-
+        
         #microbit-data-log {
             width: 100%;
             height: 150px;
@@ -337,12 +334,12 @@
             resize: none;
             background-color: #f9f9f9;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -357,16 +354,16 @@
         </div>
         <div id="bluetooth-data">No data exchanged yet</div>
     </div>
-
+    
     <h1>Kids Machine Learning</h1>
     <p class="subtitle">See what the computer can recognize!</p>
-
+    
     <div class="main-container">
         <div class="input-container">
             <input type="text" id="model-url" placeholder="Paste Teachable Machine URL">
-            <button id="start-btn" onclick="startMachineLearning()">Start</button>
+            <button id="start-btn" onclick="init()">Start</button>
         </div>
-
+        
         <div class="content-row">
             <div class="video-container">
                 <div id="webcam-container">
@@ -378,7 +375,7 @@
                     <p id="initial-message" style="color: #666; text-align: center; padding: 20px;">Add your model URL above and click Start</p>
                 </div>
             </div>
-
+            
             <div class="results-container">
                 <h2 class="results-title">What Do You See?</h2>
                 <div id="label-container"></div>
@@ -392,66 +389,64 @@
     </div>
 
     <script>
-        // HF2 Protocol Constants
+        // HF2 Protocol Constants - Using EXACT UUIDs from your firmware
         const BLEHF2_FLAG_SERIAL_OUT = 0x80;
         const BLEHF2_FLAG_SERIAL_ERR = 0xC0;
         const BLEHF2_DATA_LENGTH = 19;
-
-        // Micro:bit HF2 Service and Characteristic UUIDs
-        const BLEHF2ServiceUUID = 'b112f5e6-2679-30da-a26e-0273b6043849';
-        const BLEHF2TxCharacteristicUUID = 'b112f5e6-2679-30da-a26e-0273b604384a';
+        
+        // Using the exact same UUIDs as your Micro:bit firmware
+        const HF2_SERVICE_UUID = 0xf5e6;
+        const HF2_SERVICE_FULL_UUID = 'b112f5e6-2679-30da-a26e-0273b6043849';
+        const HF2_CHARACTERISTIC_FULL_UUID = 'b112f5e6-2679-30da-a26e-0273b604384a';
 
         // Machine Learning Variables
         let model, webcam;
         let classNames = [];
         let predictionElements = [];
-
+        
         // Bluetooth Variables
         let microbitDevice;
         let microbitServer;
         let microbitHF2Service;
         let microbitTXCharacteristic;
-
+        
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             setupBluetoothButton();
         });
-
-         function setupBluetoothButton() {
+        
+        function setupBluetoothButton() {
             const bluetoothBtn = document.getElementById('bluetooth-btn');
             bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
         }
-
-         function updateBluetoothData(message, isReceived = false) {
+        
+        function updateBluetoothData(message, isReceived = false) {
             const dataElement = document.getElementById('bluetooth-data');
             const prefix = isReceived ? "Received: " : "Sent: ";
             dataElement.textContent = prefix + message;
-
-            // Flash the data box to show activity
+            
             dataElement.style.backgroundColor = '#ffffcc';
             setTimeout(() => {
                 dataElement.style.backgroundColor = 'white';
             }, 300);
-
-            // Also update the data log
+            
             updateMicrobitDataLog(message, isReceived);
         }
-
-         function updateMicrobitDataLog(message, isReceived = false) {
+        
+        function updateMicrobitDataLog(message, isReceived = false) {
             const container = document.getElementById('microbit-data-container');
             const log = document.getElementById('microbit-data-log');
-
-            // Show container if connected and hidden
+            
             if (microbitDevice && microbitDevice.gatt.connected && container.style.display === 'none') {
                 container.style.display = 'block';
             }
-
+            
             const direction = isReceived ? "RECV: " : "SENT: ";
             const timestamp = new Date().toLocaleTimeString();
             log.value += `[${timestamp}] ${direction}${message}\n`;
-            log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
+            log.scrollTop = log.scrollHeight;
         }
-
+        
         async function toggleBluetoothConnection() {
             if (microbitDevice && microbitDevice.gatt.connected) {
                 await disconnectMicrobit();
@@ -460,132 +455,96 @@
                 await connectMicrobit();
             }
         }
-
+        
         async function connectMicrobit() {
             try {
                 const bluetoothBtn = document.getElementById('bluetooth-btn');
                 const statusElement = document.getElementById('bluetooth-status');
-
+                
                 bluetoothBtn.disabled = true;
                 statusElement.textContent = "Connecting...";
                 statusElement.className = "connecting";
                 updateBluetoothData("Attempting to connect...");
-                console.log("connectMicrobit: Attempting to connect...");
-
-                // Step 1: Request device
-                console.log("connectMicrobit: Requesting Bluetooth Device...");
-                 microbitDevice = await navigator.bluetooth.requestDevice({
+                
+                // Using both short and full UUID for better compatibility
+                microbitDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ namePrefix: "BBC micro:bit" }],
-                    optionalServices: [BLEHF2ServiceUUID]
+                    optionalServices: [HF2_SERVICE_FULL_UUID, HF2_SERVICE_UUID]
                 });
-
-                 console.log("connectMicrobit: Device selected", microbitDevice);
+                
                 updateBluetoothData("Device selected, connecting...");
-
-                // Step 2: Connect to GATT server
-                 console.log("connectMicrobit: Connecting to GATT server...");
+                
                 microbitServer = await microbitDevice.gatt.connect();
-                console.log("connectMicrobit: Connected to GATT server:", microbitServer);
                 updateBluetoothData("Connected, getting services...");
-
-                 //Add a delay to allow connection to settle
-                  await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
-
-                // Step 3: Get service
-                console.log("connectMicrobit: Getting service", BLEHF2ServiceUUID);
-                microbitHF2Service = await microbitServer.getPrimaryService(BLEHF2ServiceUUID);
-                  console.log("connectMicrobit: Found service", microbitHF2Service);
-                   updateBluetoothData("Service found, getting characteristics...");
-
-                // Step 4: Get TX characteristic
-                console.log("connectMicrobit: Getting tx characteristic", BLEHF2TxCharacteristicUUID);
-                microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(BLEHF2TxCharacteristicUUID);
-                console.log("connectMicrobit: Found TX Characteristic", microbitTXCharacteristic);
-
-                 // Step 5: Listen for incoming data
+                
+                // Try both UUID formats
+                try {
+                    microbitHF2Service = await microbitServer.getPrimaryService(HF2_SERVICE_FULL_UUID);
+                } catch (e) {
+                    microbitHF2Service = await microbitServer.getPrimaryService(HF2_SERVICE_UUID);
+                }
+                
+                updateBluetoothData("Service found, getting characteristics...");
+                
+                // Try both UUID formats for characteristic
+                try {
+                    microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(HF2_CHARACTERISTIC_FULL_UUID);
+                } catch (e) {
+                    microbitTXCharacteristic = await microbitHF2Service.getCharacteristic(HF2_SERVICE_UUID);
+                }
+                
                 await microbitTXCharacteristic.startNotifications();
                 microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
-
+                
                 statusElement.textContent = "Connected!";
                 statusElement.className = "connected";
                 bluetoothBtn.textContent = "Disconnect";
                 bluetoothBtn.disabled = false;
+                
                 updateBluetoothData("Connection successful!");
-
-                // Send initialization message
                 await sendToMicrobit("INIT:READY");
-
-                // Handle disconnection
+                
                 microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
-
-                console.log("Micro:bit connected successfully!");
-
-
+                
             } catch (error) {
                 console.error("Bluetooth error:", error);
-                 updateBluetoothData("Connection failed: " + error.message);
-                let errorMessage = "Bluetooth Connection Failed:\n";
-                if (error instanceof DOMException && error.name === "NotFoundError") {
-                    errorMessage += "Device not found. Ensure your Micro:bit is nearby and powered on.";
-                } else if (error instanceof DOMException && error.name === "SecurityError") {
-                    errorMessage += "Security error. Ensure your page is served over HTTPS, and that you have enabled bluetooth permissions in your browser.";
-                 } else if (error.message.includes("No Services matching UUID")) {
-                   errorMessage += "Service not found. Is your Micro:bit flashed with the correct hex file? ";
-                 }
-                  else if (error.message.includes("GATT Server is disconnected")) {
-                   errorMessage += "GATT server disconnect before characteristics were discovered. Is your Micro:bit close by?";
-                } else {
-                    errorMessage += "An unknown error occurred: " + error.message;
-                }
-
-                alert(errorMessage);
+                updateBluetoothData("Connection failed: " + error.message);
                 document.getElementById('bluetooth-status').textContent = "Error";
                 document.getElementById('bluetooth-status').className = "disconnected";
                 document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
                 document.getElementById('bluetooth-btn').disabled = false;
-
             }
         }
-
-         function onBluetoothDisconnected() {
+        
+        function onBluetoothDisconnected() {
             const statusElement = document.getElementById('bluetooth-status');
             const bluetoothBtn = document.getElementById('bluetooth-btn');
-
+            
             statusElement.textContent = "Disconnected";
             statusElement.className = "disconnected";
             bluetoothBtn.textContent = "Connect Micro:bit";
             updateBluetoothData("Disconnected from Micro:bit");
             microbitDevice = null;
-
-            console.log("Micro:bit disconnected");
         }
-
-         async function disconnectMicrobit() {
-             if (microbitDevice && microbitDevice.gatt.connected) {
-                 try {
-                     await microbitDevice.gatt.disconnect();
-                 }
-                 catch(e) {
-                    console.error("Error disconnecting:", e);
-                    alert("An error occurred during disconnection: " + e.message);
-                 }
-             }
+        
+        async function disconnectMicrobit() {
+            if (microbitDevice && microbitDevice.gatt.connected) {
+                await microbitDevice.gatt.disconnect();
+            }
             onBluetoothDisconnected();
         }
-
-         function handleMicrobitData(event) {
+        
+        function handleMicrobitData(event) {
             const value = event.target.value;
             const data = new Uint8Array(value.buffer);
-
-            // Check if this is an HF2 packet
+            
             if (data[0] & BLEHF2_FLAG_SERIAL_OUT) {
                 const length = data[0] & 0x1F;
                 const message = new TextDecoder().decode(data.subarray(1, 1 + length));
-
+                
                 console.log("Received from Micro:bit:", message);
                 updateBluetoothData(message, true);
-
-                // Process commands from Micro:bit
+                
                 if (message === "CAPTURE") {
                     if (webcam && model) {
                         predict();
@@ -593,42 +552,37 @@
                 }
             }
         }
-
+        
         async function sendToMicrobit(message) {
-             if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
+            if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
                 try {
                     const encoder = new TextEncoder();
                     const data = encoder.encode(message);
-
+                    
                     // Create HF2 packet
                     const packet = new Uint8Array(data.length + 1);
-                    packet[0] = BLEHF2_FLAG_SERIAL_OUT | (data.length & 0x1F); // Command byte
-                    packet.set(data, 1); // Add data
-
-                    // Write to characteristic
+                    packet[0] = BLEHF2_FLAG_SERIAL_OUT | (data.length & 0x1F);
+                    packet.set(data, 1);
+                    
                     await microbitTXCharacteristic.writeValue(packet);
                     updateBluetoothData(message);
-
+                    
                 } catch (error) {
-                   console.error("Failed to send to Micro:bit:", error);
-                   alert("Failed to send data to Micro:bit: " + error.message);
-                   updateBluetoothData("Send error: " + error.message);
+                    console.error("Failed to send to Micro:bit:", error);
+                    updateBluetoothData("Send error: " + error.message);
                 }
             }
         }
-
-          function startMachineLearning() {
-            init();
-        }
+        
         // Machine Learning Functions
         async function init() {
             let baseURL = document.getElementById("model-url").value.trim();
-
+            
             if (!baseURL) {
                 alert("Please enter a Teachable Machine model URL.");
                 return;
             }
-
+            
             if (!baseURL.endsWith("/")) {
                 baseURL += "/";
             }
@@ -645,17 +599,17 @@
                 document.getElementById("loading-indicator").style.display = "flex";
                 document.getElementById("initial-message").style.display = "none";
                 document.getElementById("start-btn").disabled = true;
-
+                
                 if (model) {
                     model = null;
                 }
-
+                
                 model = await tmImage.load(modelURL, metadataURL);
                 const metadata = await fetch(metadataURL).then(res => res.json());
                 classNames = metadata.labels;
 
                 initializePredictionElements();
-
+                
                 const flip = true;
                 webcam = new tmImage.Webcam(650, 480, flip);
                 await webcam.setup();
@@ -665,10 +619,10 @@
                 canvas.width = 650;
                 canvas.height = 480;
                 canvas.style.display = "block";
-
+                
                 document.getElementById("loading-indicator").style.display = "none";
                 window.requestAnimationFrame(loop);
-
+                
             } catch (error) {
                 console.error("Error:", error);
                 alert("Failed to load model. Check:\n1. Correct URL\n2. Internet connection\n3. Model is public");
@@ -678,12 +632,12 @@
                 document.getElementById("start-btn").disabled = false;
             }
         }
-
+        
         function initializePredictionElements() {
             const labelContainer = document.getElementById("label-container");
             labelContainer.innerHTML = "";
             predictionElements = [];
-
+            
             for (let i = 0; i < classNames.length; i++) {
                 const div = document.createElement("div");
                 div.className = "prediction";
@@ -704,7 +658,7 @@
                     container: div
                 });
             }
-
+            
             // Adjust container height based on number of classes
             const resultsContainer = document.querySelector('.results-container');
             const minHeight = 500;
@@ -724,47 +678,47 @@
             }
         }
 
-         async function predict() {
-             if (!model || !webcam) return;
-
+        async function predict() {
+            if (!model || !webcam) return;
+            
             try {
                 const prediction = await model.predict(webcam.canvas);
                 updatePredictions(prediction);
-
-                 // Send top prediction to Micro:bit
-                 if (microbitDevice && microbitDevice.gatt.connected) {
-                     const topPrediction = getTopPrediction(prediction);
-                     const message = `CLASS:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
-                     await sendToMicrobit(message);
-                 }
-
+                
+                // Send top prediction to Micro:bit
+                if (microbitDevice && microbitDevice.gatt.connected) {
+                    const topPrediction = getTopPrediction(prediction);
+                    // Format: "CLASS:name:percentage" (e.g. "CLASS:apple:85")
+                    const message = `CLASS:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
+                    await sendToMicrobit(message);
+                }
+                
             } catch (error) {
-               console.error("Prediction error:", error);
-                alert("An error occurred during prediction: " + error.message);
-           }
+                console.error("Prediction error:", error);
+            }
         }
-
+        
         function getTopPrediction(predictions) {
-            return predictions.reduce((max, current) =>
-               (current.probability > max.probability) ? current : max
-           );
+            return predictions.reduce((max, current) => 
+                (current.probability > max.probability) ? current : max
+            );
         }
-
-         function updatePredictions(prediction) {
-             const predictionMap = {};
-             prediction.forEach(p => {
+        
+        function updatePredictions(prediction) {
+            const predictionMap = {};
+            prediction.forEach(p => {
                 predictionMap[p.className] = p.probability;
             });
-
-           for (let i = 0; i < classNames.length; i++) {
+            
+            for (let i = 0; i < classNames.length; i++) {
                 if (predictionElements[i]) {
                     const className = classNames[i];
                     const probability = predictionMap[className] || 0;
                     const percentage = Math.round(probability * 100);
-
-                     predictionElements[i].textElement.textContent = `${percentage}%`;
+                    
+                    predictionElements[i].textElement.textContent = `${percentage}%`;
                     predictionElements[i].barElement.style.width = `${percentage}%`;
-
+                    
                     if (percentage > 80) {
                         predictionElements[i].container.classList.add('bounce');
                         setTimeout(() => {
@@ -774,7 +728,6 @@
                 }
             }
         }
-
     </script>
 </body>
 </html>

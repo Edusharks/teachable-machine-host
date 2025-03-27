@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro:bit Bluetooth Connect</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #logContainer {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+            overflow-y: auto;
+            height: 150px;
+        }
+        #log {
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <button id="connectButton">Connect Micro:bit</button>
+    <button id="sendButton" disabled>Send "AI received"</button>
+    <div id="status">Disconnected</div>
+</div>
+
+<div id="logContainer">
+    <pre id="log"></pre>
+</div>
+
+<script>
+    // Microbit UART service UUIDs
+    // Convert the byte arrays to strings in the form expected by web-bluetooth
+     function uuidFromArray(byteArray) {
+            const hex = byteArray.map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
+              return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+        }
+
+        const BLEHF2ServiceUUID = [
+            0xb1,0x12,0xf5,0xe6,0x26,0x79,0x30,0xda,0xa2,0x6e,0x02,0x73,0xb6,0x04,0x38,0x49
+        ];
+
+        const BLEHF2TxCharacteristicUUID = [
+            0xb1,0x12,0xf5,0xe6,0x26,0x79,0x30,0xda,0xa2,0x6e,0x02,0x73,0xb6,0x04,0x38,0x4a
+        ];
+       
+        //Assuming receive is the next one in sequence
+         const BLEHF2RxCharacteristicUUID = [
+            0xb1,0x12,0xf5,0xe6,0x26,0x79,0x30,0xda,0xa2,0x6e,0x02,0x73,0xb6,0x04,0x38,0x4b
+        ];
+
+
+     const MICROBIT_UART_SERVICE = uuidFromArray(BLEHF2ServiceUUID);
+      const MICROBIT_UART_TX_CHARACTERISTIC = uuidFromArray(BLEHF2TxCharacteristicUUID);
+     const MICROBIT_UART_RX_CHARACTERISTIC = uuidFromArray(BLEHF2RxCharacteristicUUID);
+
+       console.log("Service UUID (JS):", MICROBIT_UART_SERVICE);
+        console.log("TX Char UUID (JS):", MICROBIT_UART_TX_CHARACTERISTIC);
+         console.log("RX Char UUID (JS):", MICROBIT_UART_RX_CHARACTERISTIC);
+
+    let microbitDevice;
+    let microbitServer;
+    let microbitTXCharacteristic;
+    let microbitRXCharacteristic;
+
+    const connectButton = document.getElementById('connectButton');
+    const sendButton = document.getElementById('sendButton');
+    const statusDisplay = document.getElementById('status');
+    const logDisplay = document.getElementById('log');
+
+    function log(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        logDisplay.textContent = `[${timestamp}] ${message}\n` + logDisplay.textContent;
+    }
+
+
+    connectButton.addEventListener('click', async () => {
+        if (microbitDevice && microbitDevice.gatt.connected) {
+            await disconnectMicrobit();
+        } else {
+            await connectMicrobit();
+        }
+
+    });
+
+    sendButton.addEventListener('click', async () => {
+        if (microbitDevice && microbitDevice.gatt.connected && microbitTXCharacteristic) {
+            try {
+                const encoder = new TextEncoder();
+                const data = encoder.encode("AI received");
+                await microbitTXCharacteristic.writeValue(data);
+                log('Sent: "AI received"');
+                statusDisplay.textContent = 'Sent "AI received"';
+            } catch (error) {
+                console.error('Send error:', error);
+                log("Send error: " + error.message);
+                statusDisplay.textContent = "Send error: " + error.message;
+            }
+        }
+    });
+
+    async function connectMicrobit() {
+        try {
+            connectButton.disabled = true;
+            connectButton.textContent = "Connecting...";
+            statusDisplay.textContent = "Connecting...";
+            log("Attempting to connect...");
+
+             microbitDevice = await navigator.bluetooth.requestDevice({
+                 filters: [{ namePrefix: "BBC micro:bit" }],
+                 optionalServices: [MICROBIT_UART_SERVICE]
+            });
+            log("Device selected, connecting...");
+            console.log("Device selected:", microbitDevice);
+
+            microbitServer = await microbitDevice.gatt.connect();
+            log("Connected, getting services...");
+             console.log("Connected:", microbitServer);
+
+
+            const microbitUARTService = await microbitServer.getPrimaryService(MICROBIT_UART_SERVICE);
+            log("Service found, getting characteristics...");
+             console.log("Service found:", microbitUARTService);
+
+            microbitTXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_TX_CHARACTERISTIC);
+            microbitRXCharacteristic = await microbitUARTService.getCharacteristic(MICROBIT_UART_RX_CHARACTERISTIC);
+              log("Characteristics found, starting notifications...");
+             console.log("TX Characteristic:", microbitTXCharacteristic);
+              console.log("RX Characteristic:", microbitRXCharacteristic);
+
+
+            await microbitRXCharacteristic.startNotifications();
+            microbitRXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
+
+            statusDisplay.textContent = "Connected!";
+             connectButton.textContent = "Disconnect Micro:bit";
+            sendButton.disabled = false;
+            connectButton.disabled = false;
+             log("Connection successful!");
+            microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+
+
+        } catch (error) {
+             console.error("Bluetooth error:", error);
+              statusDisplay.textContent = "Connection failed: " + error.message;
+               log("Connection failed: " + error.message);
+            connectButton.textContent = "Connect Micro:bit";
+            connectButton.disabled = false;
+        }
+    }
+
+    function handleMicrobitData(event) {
+        const value = event.target.value;
+        const message = new TextDecoder().decode(value);
+        log("Received: " + message);
+        console.log("Received from Micro:bit:", message);
+    }
+
+
+    function onBluetoothDisconnected() {
+         statusDisplay.textContent = "Disconnected";
+        log("Disconnected from Micro:bit");
+          connectButton.textContent = "Connect Micro:bit";
+        sendButton.disabled = true;
+        microbitDevice = null;
+    }
+
+    async function disconnectMicrobit() {
+        if (microbitDevice && microbitDevice.gatt.connected) {
+            await microbitDevice.gatt.disconnect();
+             log("Disconnecting...");
+        }
+         onBluetoothDisconnected();
+    }
+</script>
+</body>
+</html>

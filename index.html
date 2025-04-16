@@ -1,3 +1,5 @@
+--- START OF UPDATED FILE AI Microbit UI.html ---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +15,7 @@
             margin: 0;
             padding: 0;
         }
-
+        
         body {
             font-family: 'Comic Neue', cursive;
             background-color: #f0f9ff;
@@ -24,7 +26,7 @@
             padding: 20px;
             position: relative;
         }
-
+        
         h1 {
             color: #ff6b6b;
             text-align: center;
@@ -32,14 +34,14 @@
             margin-bottom: 10px;
             text-shadow: 2px 2px 0px #fff;
         }
-
+        
         .subtitle {
             color: #4d96ff;
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.2rem;
         }
-
+        
         .main-container {
             display: flex;
             flex-direction: column;
@@ -51,7 +53,7 @@
             padding: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
+        
         .header-container {
             width: 100%;
             display: flex;
@@ -59,7 +61,7 @@
             align-items: center;
             margin-bottom: 20px;
         }
-
+        
         .input-container {
             width: 100%;
             max-width: 800px;
@@ -67,7 +69,7 @@
             gap: 10px;
             margin-bottom: 20px;
         }
-
+        
         #model-url {
             flex: 1;
             padding: 12px;
@@ -76,7 +78,7 @@
             font-family: 'Comic Neue', cursive;
             font-size: 1rem;
         }
-
+        
         #start-btn {
             background-color: #74b9ff;
             color: white;
@@ -89,23 +91,23 @@
             font-size: 1.1rem;
             transition: all 0.2s;
         }
-
+        
         #start-btn:hover {
             background-color: #3a86ff;
         }
-
+        
         #start-btn:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
         }
-
+        
         .content-row {
             display: flex;
             width: 100%;
             justify-content: center;
             gap: 30px;
         }
-
+        
         .video-container {
             position: relative;
             width: 650px;
@@ -118,7 +120,7 @@
             align-items: center;
             border: 4px solid #74b9ff;
         }
-
+        
         #webcam-container {
             width: 100%;
             height: 100%;
@@ -127,7 +129,7 @@
             align-items: center;
             position: relative;
         }
-
+        
         #webcam-canvas {
             border-radius: 10px;
             display: none;
@@ -135,7 +137,7 @@
             height: 100%;
             object-fit: cover;
         }
-
+        
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -149,7 +151,7 @@
             background-color: rgba(233, 236, 239, 0.8);
             z-index: 10;
         }
-
+        
         .spinner {
             border: 5px solid rgba(0, 0, 0, 0.1);
             width: 40px;
@@ -159,37 +161,37 @@
             animation: spin 1s linear infinite;
             margin-bottom: 10px;
         }
-
+        
         .loading-text {
             color: #3a86ff;
             font-size: 1rem;
             font-weight: bold;
         }
-
+        
         .results-container {
             width: 400px;
-            min-height: 500px; /* Adjusted dynamically later */
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             background-color: #f8f9fa;
             border-radius: 15px;
             padding: 20px;
         }
-
+        
         .results-title {
             color: #ff6b6b;
             font-size: 1.5rem;
             margin-bottom: 20px;
             text-align: center;
         }
-
+        
         #label-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex-grow: 1;
         }
-
+        
         .prediction {
             background-color: white;
             padding: 12px 15px;
@@ -200,7 +202,7 @@
             align-items: center;
             justify-content: space-between;
         }
-
+        
         .prediction-name {
             font-weight: bold;
             color: #333;
@@ -210,14 +212,14 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
+        
         .confidence-container {
             display: flex;
             align-items: center;
             gap: 10px;
             width: 55%;
         }
-
+        
         .confidence-text {
             font-weight: bold;
             color: #4d96ff;
@@ -225,7 +227,7 @@
             min-width: 45px;
             text-align: right;
         }
-
+        
         .confidence-bar-container {
             flex: 1;
             height: 16px;
@@ -233,7 +235,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-
+        
         .confidence-bar {
             height: 100%;
             background: linear-gradient(90deg, #74b9ff, #3a86ff);
@@ -241,7 +243,7 @@
             width: 0%;
             transition: width 0.5s ease-out;
         }
-
+        
         /* Bluetooth Controls */
         .bluetooth-container {
             position: absolute;
@@ -251,7 +253,7 @@
             align-items: center;
             gap: 10px;
         }
-
+        
         #bluetooth-btn {
             background-color: #9b59b6;
             color: white;
@@ -265,11 +267,11 @@
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+        
         #bluetooth-btn:hover {
             background-color: #8e44ad;
         }
-
+        
         #bluetooth-status {
             padding: 8px 12px;
             font-weight: bold;
@@ -277,28 +279,28 @@
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
+        
         .connected {
             color: #27ae60;
         }
-
+        
         .disconnected {
             color: #e74c3c;
         }
-
+        
         .connecting {
             color: #f39c12;
         }
-
+        
         .bounce {
             animation: bounce 0.4s;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
+        
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -310,16 +312,16 @@
         <button id="bluetooth-btn">Connect Micro:bit</button>
         <div id="bluetooth-status" class="disconnected">Disconnected</div>
     </div>
-
+    
     <h1>Kids Machine Learning</h1>
     <p class="subtitle">See what the computer can recognize!</p>
-
+    
     <div class="main-container">
         <div class="input-container">
             <input type="text" id="model-url" placeholder="Paste Teachable Machine URL">
             <button id="start-btn" onclick="init()">Start</button>
         </div>
-
+        
         <div class="content-row">
             <div class="video-container">
                 <div id="webcam-container">
@@ -331,7 +333,7 @@
                     <p id="initial-message" style="color: #666; text-align: center; padding: 20px;">Add your model URL above and click Start</p>
                 </div>
             </div>
-
+            
             <div class="results-container">
                 <h2 class="results-title">What Do You See?</h2>
                 <div id="label-container"></div>
@@ -339,407 +341,387 @@
         </div>
     </div>
 
-<script>
-    // Machine Learning Variables
-    let model, webcam;
-    let classNames = [];
-    let predictionElements = [];
-
-    // Bluetooth Variables
-    let microbitDevice;
-    let microbitServer;
-    let microbitUARTService;
-    let microbitRXCharacteristic; // To Send Data TO Microbit
-    let microbitTXCharacteristic; // To Receive Data FROM Microbit
-
-    // Initialize the app
-    document.addEventListener('DOMContentLoaded', function() {
-        setupBluetoothButton();
-    });
-
-    function setupBluetoothButton() {
-        const bluetoothBtn = document.getElementById('bluetooth-btn');
-        bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
-    }
-
-    async function toggleBluetoothConnection() {
-        console.log("Toggle Bluetooth Connection called."); // Log start
-        if (microbitDevice && microbitDevice.gatt.connected) {
-            await disconnectMicrobit();
-        } else {
-            await connectMicrobit();
+    <script>
+        // Machine Learning Variables
+        let model, webcam;
+        let classNames = [];
+        let predictionElements = [];
+        
+        // Bluetooth Variables
+        let microbitDevice;
+        let microbitServer;
+        let microbitUARTService;
+        let microbitRXCharacteristic;
+        let microbitTXCharacteristic;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupBluetoothButton();
+        });
+        
+        function setupBluetoothButton() {
+            const bluetoothBtn = document.getElementById('bluetooth-btn');
+            bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
         }
-    }
-
-    async function connectMicrobit() {
-        console.log("Attempting to connect Micro:bit..."); // Log start of connect
-        const bluetoothBtn = document.getElementById('bluetooth-btn');
-        const statusElement = document.getElementById('bluetooth-status');
-
-        try {
-            bluetoothBtn.disabled = true;
-            statusElement.textContent = "Connecting...";
-            statusElement.className = "connecting";
-            console.log("UI set to Connecting...");
-
-            // Request Bluetooth device
-            console.log("Requesting Bluetooth device...");
-            microbitDevice = await navigator.bluetooth.requestDevice({
-                filters: [{ namePrefix: "BBC micro:bit" }],
-                optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] // UART service UUID
-            });
-            console.log("Device selected:", microbitDevice.name);
-
-            // Add disconnection listener *early*
-            microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
-            console.log("Added gattserverdisconnected listener.");
-
-            // Connect to the GATT Server
-            console.log("Connecting to GATT Server...");
-            microbitServer = await microbitDevice.gatt.connect();
-            console.log("GATT Server connected.");
-
-            // Get the UART service
-            console.log("Getting UART Service (6e400001-b5a3-f393-e0a9-e50e24dcca9e)...");
-            microbitUARTService = await microbitServer.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
-            console.log("UART Service obtained.");
-
-            // Get the characteristics (RX to write TO microbit, TX to read FROM microbit)
-            console.log("Getting RX Characteristic (6e400002-...).");
-            microbitRXCharacteristic = await microbitUARTService.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e'); // Write Characteristic (RX)
-            console.log("RX Characteristic obtained.");
-
-            console.log("Getting TX Characteristic (6e400003-...).");
-            microbitTXCharacteristic = await microbitUARTService.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e'); // Read Characteristic (TX)
-            console.log("TX Characteristic obtained.");
-
-
-            // Listen for incoming data (Notifications from TX characteristic)
-            console.log("Starting TX notifications...");
-            await microbitTXCharacteristic.startNotifications();
-            console.log("TX notifications started.");
-            microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
-            console.log("Added TX characteristic listener.");
-
-
-            // --- If it reaches here, connection was successful ---
-            statusElement.textContent = "Connected!";
-            statusElement.className = "connected";
-            bluetoothBtn.textContent = "Disconnect";
-            console.log("Micro:bit connection sequence successful!");
-
-        } catch (error) {
-            // --- THIS IS THE MOST IMPORTANT PART FOR DEBUGGING ---
-            console.error("--- Bluetooth Connection Error ---");
-            console.error("Error Name:", error.name);
-            console.error("Error Message:", error.message);
-            console.error("Full Error Object:", error);
-            // --- END OF ERROR DETAILS ---
-
-            statusElement.textContent = "Error"; // Show generic error in UI
-            statusElement.className = "disconnected"; // Use disconnected style for error
+        
+        async function toggleBluetoothConnection() {
+            if (microbitDevice && microbitDevice.gatt.connected) {
+                await disconnectMicrobit();
+            } else {
+                await connectMicrobit();
+            }
+        }
+        
+        async function connectMicrobit() {
+            try {
+                const bluetoothBtn = document.getElementById('bluetooth-btn');
+                const statusElement = document.getElementById('bluetooth-status');
+                
+                bluetoothBtn.disabled = true;
+                statusElement.textContent = "Connecting...";
+                statusElement.className = "connecting";
+                
+                console.log("Requesting Bluetooth device...");
+                // Request Bluetooth device
+                microbitDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "BBC micro:bit" }],
+                    optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] // UART service UUID
+                });
+                
+                console.log("Device selected:", microbitDevice.name);
+                console.log("Connecting to GATT Server...");
+                // Connect to the GATT Server
+                microbitServer = await microbitDevice.gatt.connect();
+                
+                console.log("Getting UART Service...");
+                // Get the UART service
+                microbitUARTService = await microbitServer.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
+                
+                console.log("Getting Characteristics (RX/TX)...");
+                // Get the characteristics
+                microbitRXCharacteristic = await microbitUARTService.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e'); // RX: Write data TO micro:bit
+                microbitTXCharacteristic = await microbitUARTService.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e'); // TX: Receive data FROM micro:bit (Notifications)
+                
+                console.log("Setting up TX notifications...");
+                // Listen for incoming data
+                await microbitTXCharacteristic.startNotifications();
+                microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
+                
+                statusElement.textContent = "Connected!";
+                statusElement.className = "connected";
+                bluetoothBtn.textContent = "Disconnect";
+                bluetoothBtn.disabled = false;
+                
+                // Handle disconnection
+                microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+                
+                console.log("Micro:bit connected successfully!");
+                
+            } catch (error) {
+                console.error("Bluetooth Connection Error:", error);
+                document.getElementById('bluetooth-status').textContent = "Error"; // Keep it concise
+                document.getElementById('bluetooth-status').className = "disconnected";
+                document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
+                document.getElementById('bluetooth-btn').disabled = false;
+                // Clean up resources if partially connected
+                if (microbitDevice && microbitDevice.gatt.connected) {
+                     microbitDevice.gatt.disconnect();
+                }
+                microbitDevice = null;
+            }
+        }
+        
+        function onBluetoothDisconnected() {
+            const statusElement = document.getElementById('bluetooth-status');
+            const bluetoothBtn = document.getElementById('bluetooth-btn');
+            
+            statusElement.textContent = "Disconnected";
+            statusElement.className = "disconnected";
             bluetoothBtn.textContent = "Connect Micro:bit";
-            // Optional: Show a more specific alert to the user
-            // alert(`Bluetooth Connection Failed: ${error.message}`);
+            bluetoothBtn.disabled = false; // Allow reconnection attempts
 
-        } finally {
-            // Re-enable button regardless of success or failure AFTER the attempt
-            bluetoothBtn.disabled = false;
-            console.log("Connect attempt finished (finally block). Button enabled.");
-        }
-    }
-
-    function onBluetoothDisconnected() {
-        console.log("onBluetoothDisconnected triggered."); // Log event
-        const statusElement = document.getElementById('bluetooth-status');
-        const bluetoothBtn = document.getElementById('bluetooth-btn');
-
-        statusElement.textContent = "Disconnected";
-        statusElement.className = "disconnected";
-        bluetoothBtn.textContent = "Connect Micro:bit";
-        bluetoothBtn.disabled = false; // Ensure button is enabled
-        microbitDevice = null; // Clear device reference
-        microbitRXCharacteristic = null; // Clear characteristics
-        microbitTXCharacteristic = null;
-
-        console.log("Micro:bit state reset to disconnected.");
-    }
-
-    async function disconnectMicrobit() {
-        console.log("Attempting to disconnect...");
-        if (microbitDevice && microbitDevice.gatt.connected) {
-             // Stop listening before disconnecting
+            // Clean up state
             if (microbitTXCharacteristic) {
                 try {
-                    console.log("Removing TX listener and stopping notifications...");
                     microbitTXCharacteristic.removeEventListener('characteristicvaluechanged', handleMicrobitData);
-                    await microbitTXCharacteristic.stopNotifications();
-                    console.log("Stopped TX notifications.");
-                } catch (error) {
-                    console.error("Error stopping notifications during disconnect:", error);
+                } catch(e) {
+                    console.warn("Could not remove TX listener cleanly", e);
                 }
             }
-            console.log("Calling gatt.disconnect()...");
-            try {
-                await microbitDevice.gatt.disconnect();
-                console.log("gatt.disconnect() called successfully.");
-                 // The 'gattserverdisconnected' event SHOULD trigger onBluetoothDisconnected,
-                 // but sometimes it's good to call it manually if the event doesn't fire reliably.
-                 // However, let's rely on the event listener first.
-            } catch(error) {
-                console.error("Error during gatt.disconnect():", error);
-                // Force UI update even if disconnect call fails
-                onBluetoothDisconnected();
-            }
-        } else {
-            console.log("Disconnect called but device not connected or null.");
-            // Ensure UI reflects disconnected state if called when already disconnected
-            onBluetoothDisconnected();
+            microbitDevice = null;
+            microbitServer = null;
+            microbitUARTService = null;
+            microbitRXCharacteristic = null;
+            microbitTXCharacteristic = null;
+            
+            console.log("Micro:bit disconnected");
         }
-    }
-
-    function handleMicrobitData(event) {
-        try {
+        
+        async function disconnectMicrobit() {
+            if (microbitDevice && microbitDevice.gatt.connected) {
+                console.log("Disconnecting from Micro:bit...");
+                await microbitDevice.gatt.disconnect();
+                 // The 'gattserverdisconnected' event should fire and call onBluetoothDisconnected
+            } else {
+                 console.log("Already disconnected or device not available.");
+                 onBluetoothDisconnected(); // Ensure UI updates if disconnect called when not connected
+            }
+        }
+        
+        function handleMicrobitData(event) {
             const value = event.target.value;
             const decoder = new TextDecoder();
             const message = decoder.decode(value);
-            console.log("Received raw data length:", value.byteLength); // Log byte length
-            console.log("Received from Micro:bit (decoded):", message);
-
-            // Example Interaction
-            if (message.trim().toUpperCase() === "CAPTURE") {
+            
+            console.log("Received from Micro:bit:", message);
+            
+            // Example: If Micro:bit sends "CAPTURE", take a prediction
+            if (message.trim() === "CAPTURE") {
                 if (webcam && model) {
-                    console.log("Micro:bit requested capture!");
-                    // Potentially add visual feedback or trigger single prediction
+                    predict(); // Call predict directly, it includes sending data back
                 }
             }
-        } catch (error) {
-            console.error("Error handling Micro:bit data:", error);
+             // Add more handlers here based on messages from the micro:bit
         }
-    }
+        
+        // *** UPDATED FUNCTION ***
+        async function sendToMicrobit(message) {
+            if (microbitDevice && microbitDevice.gatt.connected && microbitRXCharacteristic) {
+                const encoder = new TextEncoder();
+                const messageWithNewline = message + '\n'; // Append newline character
+                try {
+                    // Encode the message WITH the newline
+                    const encodedMessage = encoder.encode(messageWithNewline);
+                    
+                    // Send the encoded message
+                    await microbitRXCharacteristic.writeValueWithoutResponse(encodedMessage); // Use WithoutResponse for potentially faster sending if micro:bit doesn't need to acknowledge
+                    // OR use: await microbitRXCharacteristic.writeValue(encodedMessage); // If acknowledgement is needed or WithoutResponse fails
 
-    async function sendToMicrobit(message) {
-        // console.log(`Attempting to send: "${message}"`); // Log attempt
-        if (microbitDevice && microbitDevice.gatt.connected && microbitRXCharacteristic) {
-            const encoder = new TextEncoder();
-            const messageWithNewline = message + '\n';
-            // console.log(`Encoding message with newline: "${messageWithNewline.replace('\n', '\\n')}"`); // Log exact encoded string
+                    // Log what was actually sent (replace newline with visible representation)
+                    console.log("Sent to Micro:bit:", messageWithNewline.replace('\n', '\\n'));
+
+                } catch (error) {
+                    console.error("Error sending data to Micro:bit:", error);
+                    // Optional: Add UI feedback about the sending error
+                }
+            } else {
+                 console.warn("Cannot send: Micro:bit not connected or RX characteristic not available.");
+            }
+        }
+        
+        // Machine Learning Functions
+        async function init() {
+            let baseURL = document.getElementById("model-url").value.trim();
+            
+            if (!baseURL) {
+                alert("Please enter a Teachable Machine model URL.");
+                return;
+            }
+            
+            // Basic validation and fixing common URL issues
+            if (!baseURL.startsWith("https://")) {
+                 alert("URL must start with https://");
+                 return;
+            }
+            if (!baseURL.includes("teachablemachine.withgoogle.com/models/")) {
+                alert("Please enter a valid Teachable Machine model URL from teachablemachine.withgoogle.com.");
+                return;
+            }
+             if (!baseURL.endsWith("/")) {
+                baseURL += "/";
+            }
+
+            const modelURL = baseURL + "model.json";
+            const metadataURL = baseURL + "metadata.json";
+
             try {
-                // Using writeValueWithoutResponse might be slightly faster if ACK isn't needed
-                 await microbitRXCharacteristic.writeValueWithoutResponse(encoder.encode(messageWithNewline));
-                // OR use: await microbitRXCharacteristic.writeValue(encoder.encode(messageWithNewline));
+                document.getElementById("loading-indicator").style.display = "flex";
+                document.getElementById("initial-message").style.display = "none";
+                document.getElementById("start-btn").disabled = true;
+                
+                // Clear previous model/webcam if re-initializing
+                if (webcam) {
+                    await webcam.stop(); // Stop the stream if it's running
+                    webcam = null;
+                }
+                if (model) {
+                    // tfjs models might have a dispose method, tmImage wrapper might not expose it directly
+                    model = null; 
+                }
+                
+                console.log("Loading model:", modelURL);
+                model = await tmImage.load(modelURL, metadataURL);
+                console.log("Loading metadata:", metadataURL);
+                const metadata = await fetch(metadataURL).then(res => res.json());
+                classNames = metadata.labels;
+                console.log("Class names:", classNames);
 
-                 // console.log(`Sent to Micro:bit: "${messageWithNewline.replace('\n', '\\n')}"`); // Log success
+                initializePredictionElements();
+                
+                const flip = true; // Flip camera horizontally
+                const webcamWidth = 650;
+                const webcamHeight = 480;
+
+                console.log("Setting up webcam...");
+                webcam = new tmImage.Webcam(webcamWidth, webcamHeight, flip);
+                await webcam.setup(); // Request camera access
+                await webcam.play();
+                console.log("Webcam started.");
+
+                const canvas = document.getElementById("webcam-canvas");
+                canvas.width = webcamWidth;
+                canvas.height = webcamHeight;
+                canvas.style.display = "block"; // Make canvas visible
+                
+                document.getElementById("loading-indicator").style.display = "none";
+                
+                // Start the prediction loop
+                window.requestAnimationFrame(loop);
+                
             } catch (error) {
-                console.error("--- Error sending to Micro:bit ---");
-                console.error("Error Name:", error.name);
-                console.error("Error Message:", error.message);
-                console.error("Full Error Object:", error);
-                if (error.name === 'NetworkError') {
-                     console.warn("Micro:bit NetworkError during send. Likely disconnected.");
-                     // Consider triggering disconnect flow
-                     // disconnectMicrobit();
-                }
+                console.error("Initialization Error:", error);
+                alert("Failed to load model or start webcam. Check:\n1. Correct URL\n2. Internet connection\n3. Camera permissions granted\n4. Model is shared/public");
+                document.getElementById("loading-indicator").style.display = "none";
+                document.getElementById("initial-message").style.display = "block";
+                document.getElementById("webcam-canvas").style.display = "none"; // Hide canvas on error
+            } finally {
+                document.getElementById("start-btn").disabled = false; // Re-enable start button
             }
-        } else {
-             // console.log("Skipped sending: Micro:bit not connected or RX characteristic not ready."); // Log skip
         }
-    }
-
-
-    // --- Machine Learning Functions (Mostly Unchanged) ---
-
-    async function init() {
-        console.log("Initializing Machine Learning model and webcam...");
-        let baseURL = document.getElementById("model-url").value.trim();
-
-        if (!baseURL) {
-            alert("Please enter a Teachable Machine model URL.");
-            return;
-        }
-        if (!baseURL.endsWith("/")) baseURL += "/";
-        if (!baseURL.startsWith("https://teachablemachine.withgoogle.com/models/")) {
-            alert("Please enter a valid Teachable Machine model URL starting with https://teachablemachine.withgoogle.com/models/");
-            return;
-        }
-
-        const modelURL = baseURL + "model.json";
-        const metadataURL = baseURL + "metadata.json";
-
-        try {
-            document.getElementById("loading-indicator").style.display = "flex";
-            document.getElementById("initial-message").style.display = "none";
-            document.getElementById("start-btn").disabled = true;
-            console.log("Loading UI elements hidden/disabled.");
-
-            if (webcam) {
-                console.log("Stopping existing webcam...");
-                await webcam.stop();
-                webcam = null;
-            }
-            if (model) {
-                 console.log("Clearing previous model...");
-                 model = null;
+        
+        function initializePredictionElements() {
+            const labelContainer = document.getElementById("label-container");
+            labelContainer.innerHTML = ""; // Clear previous elements
+            predictionElements = [];
+            
+            if (!classNames || classNames.length === 0) {
+                console.warn("No class names found to initialize predictions.");
+                return;
             }
 
-            console.log("Loading model from:", modelURL);
-            model = await tmImage.load(modelURL, metadataURL);
-            console.log("Model loaded. Fetching metadata from:", metadataURL);
-            const metadataResponse = await fetch(metadataURL);
-            if (!metadataResponse.ok) throw new Error(`Failed to fetch metadata: ${metadataResponse.statusText}`);
-            const metadata = await metadataResponse.json();
-            classNames = metadata.labels;
-            console.log("Metadata loaded. Class names:", classNames);
-
-            initializePredictionElements();
-
-            const flip = true;
-            const webcamContainer = document.getElementById('webcam-container');
-            console.log("Setting up webcam...");
-            webcam = new tmImage.Webcam(webcamContainer.offsetWidth, webcamContainer.offsetHeight, flip);
-            await webcam.setup();
-            await webcam.play();
-            console.log("Webcam setup and playing.");
-
-            const canvas = document.getElementById("webcam-canvas");
-            canvas.width = webcamContainer.offsetWidth;
-            canvas.height = webcamContainer.offsetHeight;
-            canvas.style.display = "block";
-
-            document.getElementById("loading-indicator").style.display = "none";
-            console.log("Initialization complete. Starting prediction loop.");
-            window.requestAnimationFrame(loop);
-
-        } catch (error) {
-            console.error("--- Initialization Error ---");
-            console.error("Error Name:", error.name);
-            console.error("Error Message:", error.message);
-            console.error("Full Error Object:", error);
-            alert(`Failed to load model or setup webcam.\nCheck:\n1. URL & Model Public\n2. Webcam Permissions\n3. Internet\nError: ${error.message}`);
-            document.getElementById("loading-indicator").style.display = "none";
-            document.getElementById("initial-message").style.display = "block";
-        } finally {
-            document.getElementById("start-btn").disabled = false;
-             console.log("Initialization attempt finished. Start button enabled.");
-        }
-    }
-
-    function initializePredictionElements() {
-        const labelContainer = document.getElementById("label-container");
-        labelContainer.innerHTML = "";
-        predictionElements = [];
-
-        if (!classNames || classNames.length === 0) {
-            console.warn("No class names found during initialization.");
-            labelContainer.innerHTML = "<p style='color: red;'>Could not load class names.</p>";
-            return;
-        }
-        console.log(`Initializing ${classNames.length} prediction elements.`);
-
-        for (let i = 0; i < classNames.length; i++) {
-            const div = document.createElement("div");
-            div.className = "prediction";
-            div.innerHTML = `
-                <div class="prediction-name">${classNames[i]}</div>
-                <div class="confidence-container">
-                    <div class="confidence-text" id="confidence-text-${i}">0%</div>
-                    <div class="confidence-bar-container">
-                        <div class="confidence-bar" id="confidence-bar-${i}" style="width: 0%"></div>
+            for (let i = 0; i < classNames.length; i++) {
+                const div = document.createElement("div");
+                div.className = "prediction";
+                div.innerHTML = `
+                    <div class="prediction-name" title="${classNames[i]}">${classNames[i]}</div>
+                    <div class="confidence-container">
+                        <div class="confidence-text" id="confidence-text-${i}">0%</div>
+                        <div class="confidence-bar-container">
+                            <div class="confidence-bar" id="confidence-bar-${i}" style="width: 0%"></div>
+                        </div>
                     </div>
-                </div>
-            `;
-            labelContainer.appendChild(div);
-            predictionElements.push({
-                nameElement: div.querySelector('.prediction-name'),
-                textElement: div.querySelector('.confidence-text'),
-                barElement: div.querySelector('.confidence-bar'),
-                container: div
+                `;
+                labelContainer.appendChild(div);
+                predictionElements.push({
+                    nameElement: div.querySelector('.prediction-name'),
+                    textElement: div.querySelector('.confidence-text'),
+                    barElement: div.querySelector('.confidence-bar'),
+                    container: div
+                });
+            }
+            
+            // Adjust container height based on number of classes dynamically
+            const resultsContainer = document.querySelector('.results-container');
+            const basePadding = 80; // Approx padding/title height
+            const itemHeight = 50; // Approx height per prediction item + gap
+            const calculatedHeight = classNames.length * itemHeight + basePadding;
+            const minHeight = 400; // Ensure a minimum height
+            resultsContainer.style.height = `${Math.max(minHeight, calculatedHeight)}px`;
+        }
+
+        async function loop() {
+            if (webcam && webcam.canvas) { // Ensure webcam is running and has a canvas
+                webcam.update(); // Get current frame
+                const canvas = document.getElementById("webcam-canvas");
+                const ctx = canvas.getContext("2d");
+                // Draw the webcam frame onto the canvas visible to the user
+                ctx.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
+                
+                // Make prediction based on the webcam frame
+                await predict(); 
+                
+                // Continue the loop
+                window.requestAnimationFrame(loop);
+            }
+             // If webcam stopped or errored, loop will naturally stop
+        }
+
+        async function predict() {
+            if (!model || !webcam || !webcam.canvas) {
+                 console.warn("Prediction skipped: Model or webcam not ready.");
+                 return; // Exit if model/webcam isn't ready
+            }
+            
+            try {
+                // Predict using the webcam's internal canvas (which tmImage manages)
+                const prediction = await model.predict(webcam.canvas);
+                updatePredictionsUI(prediction); // Update the display bars/text
+                
+                // Send top prediction to Micro:bit IF connected
+                if (microbitDevice && microbitDevice.gatt.connected) {
+                    const topPrediction = getTopPrediction(prediction);
+                    if (topPrediction) { // Ensure there is a top prediction
+                         // Format: DETECTED:ClassName:Probability%
+                        const messageToSend = `DETECTED:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
+                        await sendToMicrobit(messageToSend); // Send with newline added by the function
+                    }
+                }
+                
+            } catch (error) {
+                console.error("Prediction Error:", error);
+                 // Potentially stop loop or show error state? For now, just log.
+            }
+        }
+        
+        function getTopPrediction(predictions) {
+             if (!predictions || predictions.length === 0) return null; // Handle empty predictions
+             
+            // Use reduce to find the prediction with the highest probability
+            return predictions.reduce((max, current) => 
+                (current.probability > max.probability) ? current : max, 
+                predictions[0] // Initialize with the first prediction
+            );
+        }
+        
+        // Renamed to avoid confusion with the ML predict function
+        function updatePredictionsUI(predictions) {
+            if (!predictions || predictions.length === 0 || predictionElements.length === 0) {
+                // console.log("No predictions or UI elements to update.");
+                return; // Nothing to update
+            }
+
+            // Create a map for quick lookup of probabilities by class name
+            const predictionMap = {};
+            predictions.forEach(p => {
+                predictionMap[p.className] = p.probability;
             });
-        }
-
-        const resultsContainer = document.querySelector('.results-container');
-        const minHeight = 400;
-        const titleHeight = 50;
-        const itemHeight = 50;
-        const newHeight = Math.max(minHeight, (classNames.length * itemHeight) + titleHeight);
-        resultsContainer.style.minHeight = `${newHeight}px`;
-         console.log("Prediction elements created and container height adjusted.");
-    }
-
-    async function loop() {
-        if (!webcam || !webcam.webcam || !model) { // Added !model check
-            // console.log("Webcam/Model stopped or not ready, ending loop."); // Reduce console noise
-            return;
-        }
-
-        try {
-            webcam.update();
-            const canvas = document.getElementById("webcam-canvas");
-            const ctx = canvas.getContext("2d");
-            if (!canvas || !ctx) return; // Ensure canvas is still available
-            ctx.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
-            await predict();
-            window.requestAnimationFrame(loop);
-        } catch (error) {
-            console.error("Error in animation loop:", error);
-            // Potentially stop the loop if errors persist
-        }
-    }
-
-    async function predict() {
-        if (!model || !webcam || !webcam.canvas) return;
-
-        try {
-            const prediction = await model.predict(webcam.canvas);
-            updatePredictions(prediction);
-
-            if (microbitDevice && microbitDevice.gatt.connected) {
-                const topPrediction = getTopPrediction(prediction);
-                if (topPrediction) {
-                    const message = `DETECTED:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`;
-                    await sendToMicrobit(message);
-                }
-            }
-
-        } catch (error) {
-             // Avoid spamming console in loop, maybe log only occasionally
-             // console.error("Prediction error:", error);
-        }
-    }
-
-    function getTopPrediction(predictions) {
-        if (!predictions || predictions.length === 0) return null;
-        return predictions.reduce((max, current) =>
-            (current.probability > max.probability) ? current : max
-        );
-    }
-
-    function updatePredictions(prediction) {
-        const predictionMap = {};
-        prediction.forEach(p => {
-            predictionMap[p.className] = p.probability;
-        });
-
-        for (let i = 0; i < classNames.length; i++) {
-            if (predictionElements[i]) {
-                const className = classNames[i];
-                const probability = predictionMap[className] || 0;
-                const percentage = Math.round(probability * 100);
-
-                predictionElements[i].textElement.textContent = `${percentage}%`;
-                predictionElements[i].barElement.style.width = `${percentage}%`;
-
-                if (percentage > 80 && !predictionElements[i].container.classList.contains('bounce')) {
-                    predictionElements[i].container.classList.add('bounce');
-                    setTimeout(() => {
-                        if (predictionElements[i] && predictionElements[i].container) {
-                            predictionElements[i].container.classList.remove('bounce');
-                        }
-                    }, 400);
-                }
+            
+            // Update each UI element
+            for (let i = 0; i < predictionElements.length; i++) {
+                 const className = predictionElements[i].nameElement.textContent; // Get class name from UI
+                 const probability = predictionMap[className] || 0; // Get probability, default to 0 if not found
+                 const percentage = Math.round(probability * 100);
+                 
+                 predictionElements[i].textElement.textContent = `${percentage}%`;
+                 predictionElements[i].barElement.style.width = `${percentage}%`;
+                 
+                 // Simple animation for high confidence
+                 if (percentage > 85) { // Adjusted threshold slightly
+                     if (!predictionElements[i].container.classList.contains('bounce')) {
+                        predictionElements[i].container.classList.add('bounce');
+                        setTimeout(() => {
+                            // Check if element still exists before removing class
+                            if (predictionElements[i] && predictionElements[i].container) {
+                                predictionElements[i].container.classList.remove('bounce');
+                            }
+                        }, 400); // Animation duration
+                     }
+                 } else {
+                     // Ensure bounce is removed if confidence drops below threshold
+                     predictionElements[i].container.classList.remove('bounce');
+                 }
             }
         }
-    }
-  </script>
+    </script>
 </body>
 </html>

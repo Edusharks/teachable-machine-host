@@ -248,13 +248,6 @@
             top: 20px;
             right: 20px;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-        }
-        
-        .bluetooth-control-row {
-            display: flex;
             align-items: center;
             gap: 10px;
         }
@@ -283,17 +276,6 @@
             border-radius: 10px;
             background-color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        #bluetooth-data {
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            max-width: 300px;
-            word-break: break-word;
-            min-height: 40px;
         }
         
         .connected {
@@ -325,11 +307,8 @@
 </head>
 <body>
     <div class="bluetooth-container">
-        <div class="bluetooth-control-row">
-            <button id="bluetooth-btn">Connect Micro:bit</button>
-            <div id="bluetooth-status" class="disconnected">Disconnected</div>
-        </div>
-        <div id="bluetooth-data">No data exchanged yet</div>
+        <button id="bluetooth-btn">Connect Micro:bit</button>
+        <div id="bluetooth-status" class="disconnected">Disconnected</div>
     </div>
     
     <h1>Kids Machine Learning</h1>
@@ -383,18 +362,6 @@
             bluetoothBtn.addEventListener('click', toggleBluetoothConnection);
         }
         
-        function updateBluetoothData(message, isReceived = false) {
-            const dataElement = document.getElementById('bluetooth-data');
-            const prefix = isReceived ? "Received: " : "Sent: ";
-            dataElement.textContent = prefix + message;
-            
-            // Flash the data box to show activity
-            dataElement.style.backgroundColor = '#ffffcc';
-            setTimeout(() => {
-                dataElement.style.backgroundColor = 'white';
-            }, 300);
-        }
-        
         async function toggleBluetoothConnection() {
             if (microbitDevice && microbitDevice.gatt.connected) {
                 await disconnectMicrobit();
@@ -411,7 +378,6 @@
                 bluetoothBtn.disabled = true;
                 statusElement.textContent = "Connecting...";
                 statusElement.className = "connecting";
-                updateBluetoothData("Attempting to connect...");
                 
                 // Request Bluetooth device
                 microbitDevice = await navigator.bluetooth.requestDevice({
@@ -419,35 +385,24 @@
                     optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] // UART service
                 });
                 
-                updateBluetoothData("Device selected, connecting...");
-                
                 // Connect to the GATT Server
                 microbitServer = await microbitDevice.gatt.connect();
                 
-                updateBluetoothData("Connected, getting services...");
-                
                 // Get the UART service
                 microbitUARTService = await microbitServer.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
-                
-                updateBluetoothData("Service found, getting characteristics...");
                 
                 // Get the characteristics
                 microbitRXCharacteristic = await microbitUARTService.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
                 microbitTXCharacteristic = await microbitUARTService.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e');
                 
                 // Listen for incoming data
-                await microbitTXCharacteristic.startNotifications();
+                microbitTXCharacteristic.startNotifications();
                 microbitTXCharacteristic.addEventListener('characteristicvaluechanged', handleMicrobitData);
                 
                 statusElement.textContent = "Connected!";
                 statusElement.className = "connected";
                 bluetoothBtn.textContent = "Disconnect";
                 bluetoothBtn.disabled = false;
-                
-                updateBluetoothData("Connection successful!");
-                
-                // Send initial test message
-                await sendToMicrobit("HELLO");
                 
                 // Handle disconnection
                 microbitDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
@@ -456,8 +411,7 @@
                 
             } catch (error) {
                 console.error("Bluetooth error:", error);
-                updateBluetoothData("Connection failed: " + error.message);
-                document.getElementById('bluetooth-status').textContent = "Error";
+                document.getElementById('bluetooth-status').textContent = "Error: " + error.message;
                 document.getElementById('bluetooth-status').className = "disconnected";
                 document.getElementById('bluetooth-btn').textContent = "Connect Micro:bit";
                 document.getElementById('bluetooth-btn').disabled = false;
@@ -471,7 +425,6 @@
             statusElement.textContent = "Disconnected";
             statusElement.className = "disconnected";
             bluetoothBtn.textContent = "Connect Micro:bit";
-            updateBluetoothData("Disconnected from Micro:bit");
             microbitDevice = null;
             
             console.log("Micro:bit disconnected");
@@ -487,13 +440,16 @@
         function handleMicrobitData(event) {
             const value = event.target.value;
             const decoder = new TextDecoder();
-            const message = decoder.decode(value).trim();
+            const message = decoder.decode(value);
             
             console.log("Received from Micro:bit:", message);
-            updateBluetoothData(message, true);
             
-            // Process commands from Micro:bit
-            if (message === "CAPTURE") {
+            // You can use this data to interact with your ML model
+            // For example, trigger predictions based on Micro:bit input
+            // or send classification results back to the Micro:bit
+            
+            // Example: If Micro:bit sends "CAPTURE", take a prediction
+            if (message.trim() === "CAPTURE") {
                 if (webcam && model) {
                     predict();
                 }
@@ -502,19 +458,9 @@
         
         async function sendToMicrobit(message) {
             if (microbitDevice && microbitDevice.gatt.connected && microbitRXCharacteristic) {
-                try {
-                    const encoder = new TextEncoder();
-                    // Ensure message ends with newline for Micro:bit
-                    const messageWithNewline = message.endsWith('\n') ? message : message + '\n';
-                    await microbitRXCharacteristic.writeValue(encoder.encode(messageWithNewline));
-                    console.log("Sent to Micro:bit:", messageWithNewline.trim());
-                    updateBluetoothData(messageWithNewline.trim());
-                } catch (error) {
-                    console.error("Failed to send to Micro:bit:", error);
-                    updateBluetoothData("Send error: " + error.message);
-                }
-            } else {
-                updateBluetoothData("Not connected, cannot send");
+                const encoder = new TextEncoder();
+                await microbitRXCharacteristic.writeValue(encoder.encode(message));
+                console.log("Sent to Micro:bit:", message);
             }
         }
         
@@ -632,8 +578,7 @@
                 // Send top prediction to Micro:bit
                 if (microbitDevice && microbitDevice.gatt.connected) {
                     const topPrediction = getTopPrediction(prediction);
-                    const message = `DETECT:${topPrediction.className.substring(0, 5)}:${Math.round(topPrediction.probability * 100)}`;
-                    await sendToMicrobit(message);
+                    await sendToMicrobit(`DETECTED:${topPrediction.className}:${Math.round(topPrediction.probability * 100)}`);
                 }
                 
             } catch (error) {
